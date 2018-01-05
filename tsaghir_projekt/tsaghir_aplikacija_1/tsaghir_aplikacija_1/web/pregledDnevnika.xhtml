@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Dnevnik</title>
+        <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body>
+        <nav class="navbar navbar-inverse fixed-top">
+            <a class="navbar-brand">NWTiS_1</a>
+            <div class="navbar-collapse">
+                <ul class="navbar-nav list-unstyled">
+                    <li class="nav-item">
+                        <h:link class="nav-link col-sm-1" styleClass="btn" value="Dnevnik" outcome="dnevnik"/>
+                    </li>
+                    <li class="nav-item">
+                        <h:link class="nav-link col-sm-2" styleClass="btn" value="Zahtjevi" outcome="zahtjev"/>
+                    </li>
+                    <li class="nav-item">
+                        <h:link class="nav-link col-sm-2" styleClass="btn" value="Korisnici" outcome="korisnik"/>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div style="margin-top:10px"></div>
+                        <h:commandButton class="btn btn-danger" value="Odjavi se" action="#{indexStranica.odjavaKorisnika()}"/>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="form-horizontal">
+                <div class="col-sm-12">
+                    <div class="col-sm-1"/>
+                    <div class="col-sm-10">
+                        <p:dataTable value="#{pregledDnevnika.listaDnevnika}" var="d" paginator="true" rows="#{pregledDnevnika.limitTabliceDnevnika}">
+                            <p:column>
+                                <f:facet name="header">ID</f:facet>
+                                <h:outputText value="#{d.id}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Korisnik</f:facet>
+                                <h:outputText value="#{d.korisnik}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">IP adresa</f:facet>
+                                <h:outputText value="#{d.ipadresa}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Komanda</f:facet>
+                                <h:outputText value="#{d.komanda}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Trajanje</f:facet>
+                                <h:outputText value="#{d.trajanje}"/>
+                            </p:column>
+                             <p:column>
+                                <f:facet name="header">Status</f:facet>
+                                <h:outputText value="#{d.status}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Vrijeme</f:facet>
+                                <h:outputText value="#{d.vrijeme}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div class="col-sm-1"/>
+                </div>
+            </div>
+    </h:body>
+</html>
+

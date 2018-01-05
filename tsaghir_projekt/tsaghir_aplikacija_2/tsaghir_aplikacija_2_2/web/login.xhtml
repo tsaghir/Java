@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        </h:head>
+        <h:body>
+            <nav class="navbar navbar-inverse fixed-top">
+                <a class="navbar-brand">#{m.index_naslov}</a>
+                <div class="navbar-collapse">
+                    <ul class="navbar-nav list-unstyled">
+                        <li class="nav-item">
+                            <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_stranica}" outcome="index"/>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="login-page">
+                <div class="form">
+                    <h:form class="login-form">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4"/>
+                            <div class="col-sm-2">
+                                <h:outputText value="#{m.login_label_korisnik}" />
+                                <h:inputText id="korisnik" class="form-control" value="#{loginStranica.korisnik}"/>
+                                <h:panelGroup id="upozorenje_korisnik">
+                                    <h:outputText class="text-danger" value="#{m.login_label_upozorenje_korisnik}"  rendered="#{loginStranica.upozorenjeKorisnik}"/>
+                                </h:panelGroup>
+                                <h:panelGroup id="nepostojeci_korisnik">
+                                    <h:outputText  class="text-danger" value="#{m.login_label_nepostojeci_korisnik}"  rendered="#{loginStranica.korisnikNePostoji}"/><br/>
+                                </h:panelGroup>
+                                <h:outputText value="#{m.login_label_lozinka}" />
+                                <h:inputSecret id="lozinka" class="form-control" value="#{loginStranica.lozinka}"/>
+                                <h:panelGroup id="kriva_lozinka">
+                                    <h:outputText  class="text-danger" value="#{m.login_label_kriva_lozinka}"  rendered="#{loginStranica.krivaLozinka}"/>
+                                </h:panelGroup>
+                                <h:panelGroup id="upozorenje_lozinka1">
+                                    <h:outputText class="text-danger" value="#{m.login_label_upozorenje_lozinka}"  rendered="#{loginStranica.upozorenjeLozinka1}"/><br/>
+                                </h:panelGroup>
+                                <h:panelGroup id="lozinka_ponovi">
+                                    <h:outputText value="#{m.login_label_ponovi_loz}" rendered="#{loginStranica.lozinkaPonovi}"/>
+                                    <h:inputSecret id="ponovljena_lozinka" class="form-control" value="#{loginStranica.lozinkaPonoviTekst}" rendered="#{loginStranica.lozinkaPonovi}"/>
+                                </h:panelGroup>
+                                <h:panelGroup id="upozorenje_lozinka2">
+                                    <h:outputText class="text-danger" value="#{m.login_label_upozorenje_lozinka}"  rendered="#{loginStranica.upozorenjeLozinka2}"/><br/>
+                                </h:panelGroup>
+                                <h:commandLink value="#{m.login_link_nova_reg}" action="#{loginStranica.aktivirajRegistraciju()}">
+                                    <f:ajax render="lozinka_ponovi registracija_gumb kriva_lozinka nepostojeci_korisnik prekini_registraciju"/>
+                                </h:commandLink>
+                                <div style="margin-top:5px"></div>
+                                <div class="btn-group">
+                                    <h:commandButton class="btn btn-success" value="#{m.login_btn_prijavi_se}" action="#{loginStranica.prijavaKorisnika()}">
+                                        <f:ajax execute="korisnik lozinka" render="nepostojeci_korisnik kriva_lozinka"/>
+                                    </h:commandButton>
+                                    <h:panelGroup id="registracija_gumb" >
+                                        <h:commandButton class="btn btn-success" value="#{m.login_btn_registriraj_se}" action="#{loginStranica.registracijaKorisnika()}" rendered="#{loginStranica.registracijaGumb}">
+                                            <f:ajax execute="korisnik lozinka ponovljena_lozinka" render="@form"/>
+                                        </h:commandButton>
+                                    </h:panelGroup>
+                                    <h:panelGroup id="prekini_registraciju">
+                                        <h:commandLink value="#{m.login_link_prekini_reg}" action="#{loginStranica.postaviRenderNaPocetno()}" rendered="#{loginStranica.prekiniRegistracijuLink}">
+                                            <f:ajax render="@form"/>
+                                        </h:commandLink>
+                                    </h:panelGroup>
+                                </div><br/>
+                                <h:panelGroup id="uspjeh_login">
+                                    <h:outputText class="text-success" value="#{m.login_label_uspjeh_reg}"  rendered="#{loginStranica.uspjehLogin}"/>
+                                </h:panelGroup>
+                            </div>
+                            <div class="col-sm-4"/>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </h:body>
+    </f:view>
+</html>
+

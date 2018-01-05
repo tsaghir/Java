@@ -1,0 +1,758 @@
+package org.foi.nwtis.tsaghir.pomagaci;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
+import org.foi.nwtis.tsaghir.konfiguracije.Konfiguracija;
+import org.foi.nwtis.tsaghir.servisi.rest.klijenti.GMKlijent;
+import org.foi.nwtis.tsaghir.servisi.rest.klijenti.OWMKlijent;
+import org.foi.nwtis.tsaghir.web.podaci.Dnevnik;
+import org.foi.nwtis.tsaghir.web.podaci.Korisnik;
+import org.foi.nwtis.tsaghir.web.podaci.Lokacija;
+import org.foi.nwtis.tsaghir.web.podaci.MeteoPodaci;
+import org.foi.nwtis.tsaghir.web.podaci.Uredjaj;
+import org.foi.nwtis.tsaghir.web.podaci.Zahtjev;
+
+/**
+ * Singleton klasa koja služa za pomoć u radu s bazom podataka
+ *
+ * @author tsaghir
+ */
+public class DataBaseHelper {
+
+    private static DataBaseHelper instance = null;
+    private static Konfiguracija konf = null;
+    private static Connection connection;
+
+    private static String driver;
+    private static String serverDatabase;
+    private static String userDatabase;
+    private static String userUsername;
+    private static String userPassword;
+    private static String apikey;
+
+    private DataBaseHelper() {
+        konf = (Konfiguracija) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get("Konfiguracija");
+        driver = konf.dajPostavku("driver.database.mysql");
+        serverDatabase = konf.dajPostavku("server.database.mysql");
+        userDatabase = konf.dajPostavku("user.database");
+        userUsername = konf.dajPostavku("user.username");
+        userPassword = konf.dajPostavku("user.password");
+        apikey = konf.dajPostavku("apikey");
+    }
+
+    /**
+     * Metoda koja stvara instancu klase
+     *
+     * @return
+     */
+    public static DataBaseHelper getInstance() {
+        if (instance == null) {
+            instance = new DataBaseHelper();
+        }
+        return instance;
+    }
+
+    /**
+     * Metoda provjerava postoji li korisnik koji je poslao naredbu
+     *
+     * @param korisnik
+     * @param lozinka
+     * @return lista svih uređaja
+     */
+    public static boolean provjeriKorinika(String korisnik, String lozinka) {
+        Statement stmt = null;
+        String query = String.format("select*from korisnici where naziv ='%s' and lozinka ='%s'", korisnik, lozinka);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            disconnect();
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja vraća sve korisnike iz baze podataka
+     *
+     * @return
+     */
+    public static List<Korisnik> dajSveKorisnike() {
+        Statement stmt = null;
+        List<Korisnik> korisniciLista = new ArrayList<>();
+        String query = "select*from korisnici;";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Korisnik k = new Korisnik();
+                k.setId(rs.getInt("id"));
+                k.setLozinka(rs.getString("lozinka"));
+                k.setNaziv(rs.getString("naziv"));
+                korisniciLista.add(k);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return korisniciLista;
+    }
+
+    /**
+     * Metoda provjerava postoji li korisnik u bazi podataka s ID - om
+     *
+     * @param id
+     * @return lista svih uređaja
+     */
+    private static boolean provjeriKorinikaId(int id) {
+        Statement stmt = null;
+        String query = String.format("select*from korisnici where id =%d;", id);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            disconnect();
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja vraća Iot uređaj prema ID-u
+     *
+     * @param id
+     * @return
+     */
+    public static Uredjaj preuzmiIotUredaj(int id) {
+        Statement stmt = null;
+        Uredjaj uredaj = null;
+        String query = String.format("select*from uredaji where id =%d;", id);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                uredaj = new Uredjaj();
+                uredaj.setId(rs.getInt("id"));
+                uredaj.setNaziv(rs.getString("naziv"));
+                uredaj.setGeoloc(new Lokacija(rs.getString("latitude"), rs.getString("longitude")));
+                GMKlijent gmk = new GMKlijent();
+                uredaj.setAdresa(gmk.getAdress(rs.getString("latitude"), rs.getString("longitude")));
+                uredaj.setStatus(rs.getInt("status"));
+                uredaj.setVrijeme_kreiranja(rs.getTimestamp("vrijeme_kreiranja"));
+                uredaj.setVrijeme_promjene(rs.getTimestamp("vrijeme_promjene"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return uredaj;
+    }
+
+    /**
+     *
+     * Metoda koja vraća sve IoT uređaje
+     *
+     * @return
+     */
+    public static List<Uredjaj> preuzmiIotUredaje() {
+        Statement stmt = null;
+        List<Uredjaj> uredajLista = new ArrayList();
+        String query = "select*from uredaji;";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Uredjaj uredaj = new Uredjaj();
+                uredaj.setId(rs.getInt("id"));
+                uredaj.setAdresa(rs.getString("naziv"));
+                uredaj.setGeoloc(new Lokacija(rs.getString("latitude"), rs.getString("longitude")));
+                GMKlijent gmk = new GMKlijent();
+                uredaj.setAdresa(gmk.getAdress(rs.getString("latitude"), rs.getString("longitude")));
+                uredajLista.add(uredaj);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return uredajLista;
+    }
+
+    public static boolean dodajNoviIotUredaj(Uredjaj uredaj) {
+        if (!provjeriIotUredaj(uredaj.getId())) {
+            try {
+                Statement stmt = null;
+                String query = String.format("INSERT INTO uredaji (id,naziv,status,latitude,longitude,vrijeme_kreiranja,vrijeme_promjene) VALUES (%d,'%s',%d,%f,%f,'%s','%s');",
+                        uredaj.getId(), uredaj.getNaziv(),uredaj.getStatus(),Float.parseFloat(uredaj.getGeoloc().getLatitude()), Float.parseFloat(uredaj.getGeoloc().getLongitude())
+                        ,uredaj.getVrijeme_kreiranja(), uredaj.getVrijeme_promjene());
+                stmt = connect().createStatement();
+                stmt.executeUpdate(query);
+                disconnect();
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+
+    private static boolean provjeriIotUredaj(int id) {
+        Statement stmt = null;
+        String query = String.format("select*from uredaji where id=%d", id);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+
+        } finally {
+            disconnect();
+        }
+        return false;
+    }
+
+    /**
+     * Provjerava postoji li korisnik pod zadanim ID-om
+     *
+     * @param id
+     * @return
+     */
+    public static boolean provjeriKorisnikaId(int id) {
+        Statement stmt = null;
+        String query = String.format("select*from korisnici where id=%d", id);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+
+        } finally {
+            disconnect();
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja vraća sve uređaje
+     *
+     * @param korisnik
+     * @return jedan korisnik
+     */
+    public static Korisnik preuzmiKorisnika(String korisnik) {
+        Statement stmt = null;
+        String query = "select*from korisnici where naziv ='" + korisnik + "';";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Korisnik kor = new Korisnik();
+                kor.setId(rs.getInt("id"));
+                kor.setLozinka(rs.getString("lozinka"));
+                kor.setNaziv(rs.getString("naziv"));
+                return kor;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return null;
+    }
+
+    /**
+     * Metoda koja vraća korisnika po korisničkom imenu
+     *
+     * @return jedan korisnik
+     */
+    public static List<Korisnik> preuzmiKorisnike() {
+        List<Korisnik> korisniciLista = new ArrayList<>();
+        Statement stmt = null;
+        String query = "select*from korisnici;";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Korisnik kor = new Korisnik();
+                kor.setId(rs.getInt("id"));
+                kor.setNaziv(rs.getString("naziv"));
+                korisniciLista.add(kor);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return korisniciLista;
+    }
+
+    /**
+     * Metoda kojom se dodaje novi korisnik u tablicu korisnici
+     *
+     * @param korisnik
+     * @return
+     */
+    public static boolean dodajNovogKorisnika(Korisnik korisnik) {
+        try {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO korisnici (naziv,lozinka) VALUES ('%s','%s');", korisnik.getNaziv(), korisnik.getLozinka());
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja ažurira korisnika u bazi podataka
+     *
+     * @param korisnik
+     * @return jedan korisnik
+     */
+    public static boolean azurirajKorisnika(Korisnik korisnik) {
+        if (provjeriKorinikaId(korisnik.getId())) {
+            try {
+                // create our java preparedstatement using a sql update query
+                PreparedStatement ps = connect().prepareStatement(
+                        "UPDATE korisnici SET naziv = ?, lozinka = ? WHERE id = ?;");
+
+                // set the preparedstatement parameters
+                ps.setString(1, korisnik.getNaziv());
+                ps.setString(2, korisnik.getLozinka());
+                ps.setInt(3, korisnik.getId());
+
+                // call executeUpdate to execute our sql update statement
+                ps.executeUpdate();
+                ps.close();
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            } finally {
+                disconnect();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja ažurira uređaj u bazi podataka
+     *
+     * @param uredaj
+     * @return
+     */
+    public static boolean azurirajIotUredaj(Uredjaj uredaj) {
+        try {
+            // create our java preparedstatement using a sql update query
+            PreparedStatement ps = connect().prepareStatement(
+                    "UPDATE uredaji SET naziv = ?, latitude = ?, longitude = ?, status = ?, vrijeme_promjene = ?, vrijeme_kreiranja = ? WHERE id = ?;");
+
+            // set the preparedstatement parameters
+            ps.setString(1, uredaj.getNaziv());
+            ps.setString(2, uredaj.getGeoloc().getLatitude());
+            ps.setString(3, uredaj.getGeoloc().getLongitude());
+            ps.setInt(4, uredaj.getStatus());
+            ps.setTimestamp(5, uredaj.getVrijeme_promjene());
+            ps.setTimestamp(6, uredaj.getVrijeme_kreiranja());
+            ps.setInt(7, uredaj.getId());
+
+            // call executeUpdate to execute our sql update statement
+            ps.executeUpdate();
+            ps.close();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            disconnect();
+        }
+    }
+
+    /**
+     * Metoda kojom se zapisuje aktivnost u dnevnik rada
+     *
+     * @param dnevnik
+     * @return
+     */
+    public synchronized static boolean zapisiDnevnikRada(Dnevnik dnevnik) {
+        try {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO dnevnik (korisnik,ipadresa,vrijeme,trajanje,status,komanda) VALUES ('%s','%s','%s',%d,%d,'%s')",
+                    dnevnik.getKorisnik(), dnevnik.getIpadresa(), dnevnik.getVrijeme(), dnevnik.getTrajanje(), dnevnik.getStatus(), dnevnik.getKomanda());
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public static List<Dnevnik> dajSveZapiseDnevnika() {
+        Statement stmt = null;
+        List<Dnevnik> dnevnik = new ArrayList<>();
+        String query = "select*from dnevnik";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Dnevnik d = new Dnevnik();
+                d.setId(rs.getInt("id"));
+                d.setKorisnik(rs.getString("korisnik"));
+                d.setIpadresa(rs.getString("ipadresa"));
+                d.setKomanda(rs.getString("komanda"));
+                d.setVrijeme(rs.getTimestamp("vrijeme"));
+                d.setTrajanje(rs.getInt("trajanje"));
+                d.setStatus(rs.getInt("status"));
+                dnevnik.add(d);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return dnevnik;
+    }
+
+    /**
+     * Metoda koja zapisuje dospjeli zahtjev u bazu podataka
+     *
+     * @param zahtjev
+     * @return
+     */
+    public synchronized static boolean zapisiDospjeliZahtjev(Zahtjev zahtjev) {
+        try {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO zahtjevi (korisnik,razinaKomande,vrstaKomande,brojIot,nazivIot,adresaIot,komanda,preuzeto) VALUES ('%s','%s','%s',%d,'%s','%s','%s','%s')",
+                    zahtjev.getKorisnik(), zahtjev.getRazinaKomande(), zahtjev.getVrstaKomande(), zahtjev.getBrojIotUredaja(), zahtjev.getNazivIotUredaja(), zahtjev.getAdresaIotUredaja(), zahtjev.getKomanda(), zahtjev.getPreuzeto());
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja dohvaća sve uređaje
+     *
+     * @return lista svih uređaja
+     */
+    public synchronized static List<Uredjaj> dajSveUredaje() {
+        Statement stmt = null;
+        List<Uredjaj> ured = new ArrayList<>();
+        String query = "select*from uredaji";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Uredjaj u = new Uredjaj();
+                u.setId(rs.getInt("id"));
+                u.setNaziv(rs.getString("naziv"));
+                u.setGeoloc(new Lokacija(String.valueOf(rs.getFloat("latitude")), String.valueOf(rs.getFloat("longitude"))));
+                u.setStatus(rs.getInt("status"));
+                u.setVrijeme_kreiranja(rs.getTimestamp("vrijeme_kreiranja"));
+                u.setVrijeme_promjene(rs.getTimestamp("vrijeme_promjene"));
+                ured.add(u);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return ured;
+    }
+
+    /**
+     * Metoda koja vraća sve zahtjeve iz baze podataka za prikaz
+     *
+     * @return
+     */
+    public static List<Zahtjev> dajSveZahtjeve() {
+        Statement stmt = null;
+        List<Zahtjev> zahtjev = new ArrayList<>();
+        String query = "select*from zahtjevi";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Zahtjev z = new Zahtjev();
+                z.setId(rs.getInt("id"));
+                z.setKorisnik(rs.getString("korisnik"));
+                z.setRazinaKomande(rs.getString("razinaKomande"));
+                z.setKomanda(rs.getString("komanda"));
+                z.setVrstaKomande(rs.getString("vrstaKomande"));
+                z.setBrojIotUredaja(rs.getInt("brojIot"));
+                z.setNazivIotUredaja(rs.getString("nazivIot"));
+                z.setAdresaIotUredaja(rs.getString("adresaIot"));
+                z.setPreuzeto(rs.getTimestamp("preuzeto"));
+                zahtjev.add(z);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return zahtjev;
+    }
+
+    /**
+     * Metoda koja zapisuje meteo podatke u tablicu METEO
+     *
+     * @param uredajId
+     * @param adresaStanice
+     * @param latitude pozicija
+     * @param longitude pozicija
+     * @param mp
+     * @return
+     */
+    public synchronized static boolean zapisiMeteoPodatke(int uredajId, String adresaStanice, float latitude, float longitude, MeteoPodaci mp) {
+        try {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO meteo (id,adresastanice,latitude,longitude,vrijeme,vrijemeopis,temp,tempmin,tempmax,vlaga,tlak,vjetar,preuzeto) VALUES (%d,'%s',%f,%f,'%s','%s',%f,%f,%f,%f,%f,%f,'%s')",
+                    uredajId, adresaStanice, latitude, longitude, System.currentTimeMillis(), mp.getWeatherValue(), mp.getTemperatureValue(),
+                    mp.getTemperatureMin(), mp.getTemperatureMax(), mp.getHumidityValue(), mp.getPressureValue(), mp.getWindSpeedValue(), new Timestamp(System.currentTimeMillis()));
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * Metoda koja dohvaća zadnje meteo podatke određeno IoT uređaja
+     *
+     * @param uredajId
+     * @return
+     */
+    public static List<MeteoPodaci> dohvatiZadnjeMeteoPodatke(int uredajId) {
+        Statement stmt = null;
+        List<MeteoPodaci> meteoPodaci = new ArrayList<>();
+        String query = String.format("SELECT * FROM meteo where id = %d order by preuzeto desc;", uredajId);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                MeteoPodaci mp = new MeteoPodaci();
+                mp.setWeatherValue(rs.getString("vrijemeopis"));
+                mp.setTemperatureValue(rs.getFloat("temp"));
+                mp.setTemperatureMin(rs.getFloat("tempmin"));
+                mp.setTemperatureMax(rs.getFloat("tempmax"));
+                mp.setHumidityValue(rs.getFloat("vlaga"));
+                mp.setPressureValue(rs.getFloat("tlak"));
+                mp.setWindSpeedValue(rs.getFloat("vjetar"));
+                mp.setLastUpdate(rs.getDate("preuzeto"));
+                meteoPodaci.add(mp);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return meteoPodaci;
+
+    }
+
+    public static MeteoPodaci dohvatiVazeceMeteoPodatke(int uredajId) {
+        Statement stmt = null;
+        String query = String.format("select*from uredaji where id=%d", uredajId);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                String latitude = rs.getString("latitude");
+                String longitude = rs.getString("longitude");
+                OWMKlijent owmk = new OWMKlijent(apikey);
+                MeteoPodaci mp = owmk.getRealTimeWeather(latitude, longitude);
+                mp.setLastUpdate(new Date());
+                return mp;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+
+        } finally {
+            disconnect();
+        }
+        return null;
+    }
+
+    public static String dohvatiUredajAdresu(int uredajId) {
+        Statement stmt = null;
+        String query = String.format("select*from uredaji where id=%d", uredajId);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                String latitude = rs.getString("latitude");
+                String longitude = rs.getString("longitude");
+                GMKlijent gmk = new GMKlijent();
+                return gmk.getAdress(latitude, longitude);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+
+        } finally {
+            disconnect();
+        }
+        return null;
+    }
+
+    /**
+     * Metoda za dohvaćanje posljednjih n uređaja za određeni uređaj
+     *
+     * @param uredajId
+     * @param broj
+     * @return
+     */
+    public static List<MeteoPodaci> dohvatiZadnje_N_MeteoPodatke(int uredajId, int broj) {
+        Statement stmt = null;
+        List<MeteoPodaci> meteoPodaci = new ArrayList<>();
+        String query = String.format("SELECT * FROM meteo where id = %d order by preuzeto desc limit %d;", uredajId, broj);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                MeteoPodaci mp = new MeteoPodaci();
+                mp.setWeatherValue(rs.getString("vrijemeopis"));
+                mp.setTemperatureValue(rs.getFloat("temp"));
+                mp.setTemperatureMin(rs.getFloat("tempmin"));
+                mp.setTemperatureMax(rs.getFloat("tempmax"));
+                mp.setHumidityValue(rs.getFloat("vlaga"));
+                mp.setPressureValue(rs.getFloat("tlak"));
+                mp.setWindSpeedValue(rs.getFloat("vjetar"));
+                mp.setLastUpdate(rs.getDate("preuzeto"));
+                meteoPodaci.add(mp);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return meteoPodaci;
+    }
+
+    /**
+     * Metoda koja daje sve meteo podatke za uređaj od datuma do datuma
+     *
+     * @param id
+     * @param pocetak
+     * @param kraj
+     * @return
+     */
+    public static List<MeteoPodaci> dajSveMeteoPodatkeZaUredajOdDo(int id, String pocetak, String kraj) {
+        Statement stmt = null;
+        List<MeteoPodaci> meteoPodaci = new ArrayList<>();
+        String query = String.format("SELECT * FROM meteo where id=%d and vrijeme between '%s' and '%s';", id, pocetak, kraj);
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                MeteoPodaci mp = new MeteoPodaci();
+                mp.setWeatherValue(rs.getString("vrijemeopis"));
+                mp.setTemperatureValue(rs.getFloat("temp"));
+                mp.setTemperatureMin(rs.getFloat("tempmin"));
+                mp.setTemperatureMax(rs.getFloat("tempmax"));
+                mp.setHumidityValue(rs.getFloat("vlaga"));
+                mp.setPressureValue(rs.getFloat("tlak"));
+                mp.setWindSpeedValue(rs.getFloat("vjetar"));
+                mp.setLastUpdate(rs.getDate("preuzeto"));
+                meteoPodaci.add(mp);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect();
+        }
+        return meteoPodaci;
+    }
+
+    /**
+     * Metoda koja vrši spajanje na MySql server
+     *
+     * @return
+     */
+    private static Connection connect() {
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection(serverDatabase + userDatabase,
+                        userUsername, userPassword);
+            } catch (Exception ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return connection;
+    }
+
+    private static Connection testConnect() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + "nwtis_tsaghir_bp_1",
+                        "tsaghir", "sF177");
+            } catch (Exception ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return connection;
+    }
+
+    /**
+     * Metoda s kojom se odspaja sa MySql servera
+     */
+    private static void disconnect() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+}

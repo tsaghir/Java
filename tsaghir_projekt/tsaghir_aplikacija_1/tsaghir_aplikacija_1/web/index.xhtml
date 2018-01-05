@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>NWTiS</title>
+        <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body>
+        <nav class="navbar navbar-inverse fixed-tops">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand">NWTiS_1</a>
+                </div>
+            </div>
+        </nav>
+        <div class="login-page">
+            <div class="form">
+                <h:form class="login-form">
+                    <div class="col-sm-12">
+                        <div class="col-sm-4"/>
+                        <div class="col-sm-2">
+                            <h:outputText value="Korisnik" />
+                            <h:inputText class="form-control" value="#{indexStranica.korisnik}"/>
+                            <h:outputText value="Lozinka" />
+                            <h:inputSecret class="form-control" value="#{indexStranica.lozinka}"/>
+                            <div style="margin-top:5px"></div>
+                            <h:commandButton class="btn btn-success" value="Prijavi se" action="#{indexStranica.prijavaKorisnika()}"/>
+                        </div>
+                        <div class="col-sm-4"/>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>
+

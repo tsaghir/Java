@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.index_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_stranica}" outcome="index"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_korisnici}" outcome="korisnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_edit}" outcome="iotEdit"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_pregled}" outcome="iotPregled"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_server_status}" outcome="serverStatus"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_dnevnik}" outcome="dnevnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_poruke}" outcome="poruka"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_mqtt}" outcome="mqtt"/>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                </h:form>
+        </h:body>
+    </f:view>
+</html>
+

@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.index_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_stranica}" outcome="index"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_korisnici}" outcome="korisnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_edit}" outcome="iotEdit"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_pregled}" outcome="iotPregled"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_server_status}" outcome="serverStatus"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_dnevnik}" outcome="dnevnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_poruke}" outcome="poruka"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_mqtt}" outcome="mqtt"/>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="col-sm-12">
+                    <div class="col-sm-10">
+                        <p:dataTable id="uredaji" value="#{iotEditZrno.listaIotUredaja}" var="uredaj" paginator="true" rows="#{iotEditZrno.limitTabliceUredaji}">
+                            <p:column style="width: 50px">
+                                <f:facet name="header">ID</f:facet>
+                                <h:outputText value="#{uredaj.id}"/>
+                            </p:column>
+                            <p:column style="width: 150px">
+                                <f:facet name="header">#{m.iotEdit_lbl_naziv}</f:facet>
+                                <h:outputText value="#{uredaj.naziv}"/>
+                            </p:column>
+                            <p:column style="width: 50px">
+                                <f:facet name="header">#{m.iotEdit_lbl_status}</f:facet>
+                                <h:outputText value="#{uredaj.status}"/>
+                            </p:column>
+                            <p:column style="width: 100px">
+                                <f:facet name="header">#{m.iotEdit_lbl_longitude}</f:facet>
+                                <h:outputText value="#{uredaj.geoloc.longitude}"/>
+                            </p:column>
+                            <p:column style="width: 100px">
+                                <f:facet name="header">#{m.iotEdit_lbl_latitude}</f:facet>
+                                <h:outputText value="#{uredaj.geoloc.latitude}"/>
+                            </p:column>
+                            <p:column style="width: 80px">
+                                <f:facet name="header">#{m.iotEdit_lbl_vrijeme_kreiranja}</f:facet>
+                                <h:outputText value="#{uredaj.vrijeme_kreiranja}"/>
+                            </p:column>
+                            <p:column style="width: 80px">
+                                <f:facet name="header">#{m.iotEdit_lbl_vrijeme_promjene}</f:facet>
+                                <h:outputText value="#{uredaj.vrijeme_promjene}"/>
+                            </p:column>
+                            <p:column style="width: 300px">
+                                <f:facet name="header">#{m.iotEdit_btn_akcija}</f:facet>
+                                <div class="btn-group">
+                                    <h:commandButton class="btn" value="#{m.iotEdit_btn_dodaj_novi}" action="#{iotEditZrno.prikaziDodajNoviUredaj()}">
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                    <h:commandButton class="btn" value="#{m.iotEdit_btn_azuriraj}" action="#{iotEditZrno.azurirajUredaj()}">
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                    <h:commandButton class="btn" value="#{m.iotEdit_btn_zadnji_meteo}" action="#{iotEditZrno.dohvatiZadnjeMeteoPodatke()}">
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                    <h:commandButton class="btn" value="#{m.iotEdit_btn_vazeci_meteo}" action="#{iotEditZrno.dohvatiVazeceMeteoPodatke()}">
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                    <h:commandButton class="btn" value="#{m.iotEdit_btn_adresa_iot}" action="#{iotEditZrno.dohvatiAdresuUredaja()}">
+                                        <f:ajax render="@form"/>
+                                    </h:commandButton>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <h:panelGrid id="azuriranje">
+                            <h:outputText value="ID" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:inputText id="id" value="#{iotEditZrno.uredajId}" class="form-control" rendered="#{iotEditZrno.prikaziAzuriranje}" disabled="#{iotEditZrno.onemoguciId}"/>
+                            <h:outputText value="#{m.iotEdit_lbl_naziv}" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:inputText id="naziv" value="#{iotEditZrno.uredajNaziv}" class="form-control"  rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:outputText value="#{m.iotEdit_lbl_status}" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:inputText id="status" value="#{iotEditZrno.uredajStatus}" class="form-control"  rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:outputText value="#{m.iotEdit_lbl_longitude}" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:inputText id="longitude" value="#{iotEditZrno.uredajLongitude}" class="form-control" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:outputText value="#{m.iotEdit_lbl_latitude}" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:inputText id="latitude" value="#{iotEditZrno.uredajLatitude}" class="form-control" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <h:outputText value="#{m.iotEdit_lbl_vrijeme_kreiranja}" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <p:calendar id="vrijeme_kreiranja" value="#{iotEditZrno.vrijemeKreiranja}" rendered="#{iotEditZrno.prikaziAzuriranje}" pattern="yyyy-mm-dd"/>
+                            <h:outputText value="#{m.iotEdit_lbl_vrijeme_promjene}" rendered="#{iotEditZrno.prikaziAzuriranje}"/>
+                            <p:calendar id="vrijeme_promjene" value="#{iotEditZrno.vrijemePromjene}" rendered="#{iotEditZrno.prikaziAzuriranje}" pattern="yyyy-mm-dd"/>
+                            <div style="margin-top:5px"></div>
+                            <div class="btn-group">
+                                <h:commandButton class="btn btn-success" value="#{m.iotEdit_btn_azuriraj_potvrdi}" action="#{iotEditZrno.potvrdi()}" rendered="#{iotEditZrno.prikaziAzuriranje}">
+                                    <f:ajax execute="id naziv status longitude latitude vrijeme_kreiranja vrijeme_promjene" render="azuriranje_uspjeh uredaji"/>
+                                </h:commandButton>
+                                <h:commandButton class="btn btn-danger" value="#{m.iotEdit_btn_azuriraj_odustani}" action="#{iotEditZrno.odustaniAzuriranje()}" rendered="#{iotEditZrno.prikaziAzuriranje}">
+                                    <f:ajax render="azuriranje_uspjeh azuriranje"/>
+                                </h:commandButton>
+                            </div>
+
+                            <h:panelGroup id="azuriranje_uspjeh">
+                                <br/>
+                                <h:outputText class="text-success" value="#{m.iotEdit_lbl_azuriranje_uspjeh}" rendered="#{iotEditZrno.prikaziAzuriranjeUspjeh}"/>
+                                <h:outputText class="text-success" value="#{m.iotEdit_lbl_dodaj_neuspjeh}" rendered="#{iotEditZrno.prikaziDodajIotNeuspjeh}"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <h:panelGroup id="adresa">
+                            <h:outputLabel value="#{iotEditZrno.adresaUredaja}" rendered="#{iotEditZrno.prikaziAdresa}"/>
+                            <h:commandLink value="#{m.iotEdit_cmd_link_ok}" action="#{iotEditZrno.zatvoriAdresa()}" rendered="#{iotEditZrno.prikaziAdresa}"/>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <h:panelGroup id="meteo">
+                        <div class="col-sm-10">
+                            <h:outputLabel value="#{iotEditZrno.odabraniUredaj.naziv}" rendered="#{iotEditZrno.prikaziMeteo}"/>
+                            <p:dataTable value="#{iotEditZrno.meteoPodaciLista}" var="meteo" paginator="true" rows="#{iotEditZrno.limitTabliceMeteo}" rendered="#{iotEditZrno.prikaziMeteo}">
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_vrijeme}</f:facet>
+                                    <h:outputText value="#{meteo.weatherValue}"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_temp}</f:facet>
+                                    <h:outputText value="#{meteo.temperatureValue} C"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_temp_min}</f:facet>
+                                    <h:outputText value="#{meteo.temperatureMin} C"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_temp_max}</f:facet>
+                                    <h:outputText value="#{meteo.temperatureMax} C"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_vlaga}</f:facet>
+                                    <h:outputText value="#{meteo.humidityValue}"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_tlak}</f:facet>
+                                    <h:outputText value="#{meteo.pressureValue} hPa"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_vjetar}</f:facet>
+                                    <h:outputText value="#{meteo.windSpeedValue}"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_preuzeto}</f:facet>
+                                    <h:outputText value="#{meteo.lastUpdate} "/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                        <div class="col-sm-2">
+                            <h:commandButton class="btn btn-danger" value="#{m.iotEdit_btn_zatvori_meteo}" action="#{iotEditZrno.zatvoriMeteo()}" rendered="#{iotEditZrno.prikaziMeteo}">
+                                <f:ajax render="meteo"/>
+                            </h:commandButton>
+                        </div>
+                    </h:panelGroup><br/>
+                </div>
+                <div class="col-sm-12">
+                    <h:panelGroup id="vazeciMeteo">
+                        <div class="col-sm-10">
+                            <h:outputLabel value="#{iotEditZrno.odabraniUredaj.naziv}" rendered="#{iotEditZrno.prikaziVazeciMeteo}"/>
+                            <p:dataTable value="#{iotEditZrno.meteoPodaciLista}" var="meteo" paginator="true" rows="#{iotEditZrno.limitTabliceMeteo}" rendered="#{iotEditZrno.prikaziVazeciMeteo}">
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_vrijeme}</f:facet>
+                                    <h:outputText value="#{meteo.weatherValue}"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_temp}</f:facet>
+                                    <h:outputText value="#{meteo.temperatureValue} C"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_temp_min}</f:facet>
+                                    <h:outputText value="#{meteo.temperatureMin} C"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_temp_max}</f:facet>
+                                    <h:outputText value="#{meteo.temperatureMax} C"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_vlaga}</f:facet>
+                                    <h:outputText value="#{meteo.humidityValue}"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_tlak}</f:facet>
+                                    <h:outputText value="#{meteo.pressureValue} hPa"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_vjetar}</f:facet>
+                                    <h:outputText value="#{meteo.windSpeedValue}"/>
+                                </p:column>
+                                <p:column style="width: 50px">
+                                    <f:facet name="header">#{m.iotEdit_table_preuzeto}</f:facet>
+                                    <h:outputText value="#{meteo.lastUpdate}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                        <div class="col-sm-2">
+                            <h:commandButton class="btn btn-danger" value="#{m.iotEdit_btn_zatvori_meteo}" action="#{iotEditZrno.zatvoriMeteo()}" rendered="#{iotEditZrno.prikaziVazeciMeteo}">
+                                <f:ajax render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

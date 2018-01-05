@@ -1,0 +1,82 @@
+# To change this license header, choose License Headers in Project Properties.
+# To change this template file, choose Tools | Templates
+# and open the template in the editor.
+
+index_naslov=NWTiS_2
+index_stranica=Promjena jezika
+index_gumb_promjena=Promjeni
+index_nav_korisnici=Korisnici
+index_nav_iot_edit=IoT Uredi
+index_nav_iot_pregled= IoT Pregled
+index_nav_server_status=Status IoT i servera
+index_nav_iot_grupe= IoT Grupe
+index_nav_dnevnik=Dnevnik
+index_nav_poruke=Poruke
+index_nav_mqtt=MQTT
+
+server_status_server_opis=Provjeri status socket servera
+server_status_iot_master_opis=Provjeri IoT_Master status grupa
+server_status_labela_unesi_naredbu=Unesi naredbu
+server_status_gumb_posalji=Po\u0161alji naredbu
+server_status_output_text_korisnik=korisnik
+server_status_output_text_lozinka=lozinka
+
+login_naslov=Prijava
+login_label_nepostojeci_korisnik=Ne postoje\u0107i korisnik
+login_label_kriva_lozinka=Kriva lozinka
+login_link_prekini_reg=Odustani
+login_label_uspjeh_reg=Registracija uspje\u0161na! Sada mo\u017eete pristupiti korisni\u010dkim imenom i lozinkom
+login_label_korisnik=Korisnik
+login_label_lozinka=Lozinka
+login_label_upozorenje_korisnik=\u017deljeno korisni\u010dko ime nije jedinstveno
+login_label_upozorenje_lozinka=Unesene lozinke nisu jednake
+login_label_ponovi_loz=Ponovi lozinku
+login_link_nova_reg=Nova registracija
+login_btn_prijavi_se=Prijavi se
+login_btn_registriraj_se=Registriraj se
+
+korisnici_btn_dohvati_korisnike=Dohvati korisnike
+korisnici_btn_uredi_podatke=Uredi podatke
+korisnici_lbl_edit_id=Va\u0161 ID
+korisnici_lbl_edit_lozinka=Va\u0161a lozinka
+korisnici_lbl_edit_korisnik=Va\u0161e korisni\u010dko ime
+korisnici_table_korisnik=Korisnik
+korisnici_table_lozinka=Lozinka
+korisnici_btn_potvrdi_azur=Potvrdi
+korisnici_lbl_edit_uspjeh=Podaci uspje\u0161no a\u017eurirani
+
+iotEdit_btn_azuriraj=A\u017euriraj
+iotEdit_btn_azuriraj_potvrdi=Potvrdi
+iotEdit_lbl_naziv=Naziv ure\u0111aja
+iotEdit_lbl_longitude=Longituda
+iotEdit_lbl_latitude=Latituda
+iotEdit_lbl_status=Status
+iotEdit_lbl_vrijeme_kreiranja=Vrijeme kreiranja
+iotEdit_lbl_vrijeme_promjene=Vrijeme promjene
+iotEdit_lbl_azuriranje_uspjeh=Ure\u0111aj a\u017euriran
+iotEdit_btn_akcija=Akcija
+iotEdit_btn_azuriraj_odustani=Odustani
+iotEdit_btn_zadnji_meteo=Zadnji(met)
+iotEdit_btn_vazeci_meteo=Va\u017ee\u0107i(met)
+iotEdit_btn_adresa_iot=Adresa
+iotEdit_btn_dodaj_novi=Dodaj
+iotEdit_lbl_dodaj_neuspjeh=Gre\u0161ka! Provjeri podatke i ID
+iotEdit_table_vrijeme=Vrijeme
+iotEdit_table_temp=Temperatura
+iotEdit_table_temp_min=Temp min.
+iotEdit_table_temp_max=Temp max.
+iotEdit_table_vlaga=Vlaga
+iotEdit_table_tlak=Tlak
+iotEdit_table_vjetar=Vjetar
+iotEdit_table_preuzeto=Preuzeto
+iotEdit_btn_zatvori_meteo=Zatvori
+iotEdit_cmd_link_ok=Zatvori
+
+iot_pregled_opis_1=Pregled IoT grupa
+iot_pregled_opis_2=Pregled odabranog IoT statusa
+iot_pregled_opis_3=Dodavanje novog IoT
+
+dnevnik_tablica_korisnik=Korisnik
+dnevnik_tablica_ipAdresa=IP adresa
+dnevnik_tablica_vrijeme_proc=Vrijeme proc.
+dnevnik_tablica_vrijeme=Datum

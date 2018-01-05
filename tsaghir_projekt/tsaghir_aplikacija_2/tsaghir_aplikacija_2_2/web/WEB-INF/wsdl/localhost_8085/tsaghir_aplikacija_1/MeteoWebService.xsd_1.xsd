@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6-1b01  svn-revision#13094. --><xs:schema xmlns:tns="http://serveri.soap.servisi.tsaghir.nwtis.foi.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://serveri.soap.servisi.tsaghir.nwtis.foi.org/">
+
+<xs:element name="preuzmiAdresuUredaja" type="tns:preuzmiAdresuUredaja" />
+
+<xs:element name="preuzmiAdresuUredajaResponse" type="tns:preuzmiAdresuUredajaResponse" />
+
+<xs:element name="preuzmiMeteoUIntervalu" type="tns:preuzmiMeteoUIntervalu" />
+
+<xs:element name="preuzmiMeteoUIntervaluResponse" type="tns:preuzmiMeteoUIntervaluResponse" />
+
+<xs:element name="preuzmiVazeceMeteoPodatke" type="tns:preuzmiVazeceMeteoPodatke" />
+
+<xs:element name="preuzmiVazeceMeteoPodatkeResponse" type="tns:preuzmiVazeceMeteoPodatkeResponse" />
+
+<xs:element name="preuzmiZadnjeMeteoPodatke" type="tns:preuzmiZadnjeMeteoPodatke" />
+
+<xs:element name="preuzmiZadnjeMeteoPodatkeResponse" type="tns:preuzmiZadnjeMeteoPodatkeResponse" />
+
+<xs:element name="preuzmi_N_MeteoPodataka" type="tns:preuzmi_N_MeteoPodataka" />
+
+<xs:element name="preuzmi_N_MeteoPodatakaResponse" type="tns:preuzmi_N_MeteoPodatakaResponse" />
+
+<xs:complexType name="preuzmiVazeceMeteoPodatke">
+<xs:sequence>
+<xs:element name="korisnik" type="xs:string" minOccurs="0" />
+<xs:element name="lozinka" type="xs:string" minOccurs="0" />
+<xs:element name="idUredaj" type="xs:int" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiVazeceMeteoPodatkeResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:meteoPodaci" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="meteoPodaci">
+<xs:sequence>
+<xs:element name="cloudsName" type="xs:string" minOccurs="0" />
+<xs:element name="cloudsValue" type="xs:int" />
+<xs:element name="humidityUnit" type="xs:string" minOccurs="0" />
+<xs:element name="humidityValue" type="xs:float" minOccurs="0" />
+<xs:element name="lastUpdate" type="xs:dateTime" minOccurs="0" />
+<xs:element name="precipitationMode" type="xs:string" minOccurs="0" />
+<xs:element name="precipitationUnit" type="xs:string" minOccurs="0" />
+<xs:element name="precipitationValue" type="xs:float" minOccurs="0" />
+<xs:element name="pressureUnit" type="xs:string" minOccurs="0" />
+<xs:element name="pressureValue" type="xs:float" minOccurs="0" />
+<xs:element name="sunRise" type="xs:dateTime" minOccurs="0" />
+<xs:element name="sunSet" type="xs:dateTime" minOccurs="0" />
+<xs:element name="temperatureMax" type="xs:float" minOccurs="0" />
+<xs:element name="temperatureMin" type="xs:float" minOccurs="0" />
+<xs:element name="temperatureUnit" type="xs:string" minOccurs="0" />
+<xs:element name="temperatureValue" type="xs:float" minOccurs="0" />
+<xs:element name="visibility" type="xs:string" minOccurs="0" />
+<xs:element name="weatherIcon" type="xs:string" minOccurs="0" />
+<xs:element name="weatherNumber" type="xs:int" />
+<xs:element name="weatherValue" type="xs:string" minOccurs="0" />
+<xs:element name="windDirectionCode" type="xs:string" minOccurs="0" />
+<xs:element name="windDirectionName" type="xs:string" minOccurs="0" />
+<xs:element name="windDirectionValue" type="xs:float" minOccurs="0" />
+<xs:element name="windSpeedName" type="xs:string" minOccurs="0" />
+<xs:element name="windSpeedValue" type="xs:float" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmi_N_MeteoPodataka">
+<xs:sequence>
+<xs:element name="korisnik" type="xs:string" minOccurs="0" />
+<xs:element name="lozinka" type="xs:string" minOccurs="0" />
+<xs:element name="broj" type="xs:int" />
+<xs:element name="idUredaj" type="xs:int" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmi_N_MeteoPodatakaResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:meteoPodaci" minOccurs="0" maxOccurs="unbounded" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiMeteoUIntervalu">
+<xs:sequence>
+<xs:element name="korisnik" type="xs:string" minOccurs="0" />
+<xs:element name="lozinka" type="xs:string" minOccurs="0" />
+<xs:element name="idUredaj" type="xs:int" />
+<xs:element name="vrijemeOd" type="xs:string" minOccurs="0" />
+<xs:element name="vrijemeDo" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiMeteoUIntervaluResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:meteoPodaci" minOccurs="0" maxOccurs="unbounded" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiZadnjeMeteoPodatke">
+<xs:sequence>
+<xs:element name="korisnik" type="xs:string" minOccurs="0" />
+<xs:element name="lozinka" type="xs:string" minOccurs="0" />
+<xs:element name="idUredaj" type="xs:int" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiZadnjeMeteoPodatkeResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:meteoPodaci" minOccurs="0" maxOccurs="unbounded" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiAdresuUredaja">
+<xs:sequence>
+<xs:element name="korisnik" type="xs:string" minOccurs="0" />
+<xs:element name="lozinka" type="xs:string" minOccurs="0" />
+<xs:element name="uredajId" type="xs:int" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="preuzmiAdresuUredajaResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

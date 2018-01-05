@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.index_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_stranica}" outcome="index"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_korisnici}" outcome="korisnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_edit}" outcome="iotEdit"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_pregled}" outcome="iotPregled"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_server_status}" outcome="serverStatus"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_dnevnik}" outcome="dnevnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_poruke}" outcome="poruka"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_mqtt}" outcome="mqtt"/>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="col-sm-12">
+                    <div class="col-sm-4">
+                        <div class="btn-group">
+                            <h:commandButton class="btn" value="#{m.korisnici_btn_dohvati_korisnike}" action="#{korisniciZrno.dohvatiKorisnike()}">
+                                <f:ajax render="korisnici_tablica azuriraj_podatke"/>
+                            </h:commandButton>
+                            <h:commandButton class="btn" value="#{m.korisnici_btn_uredi_podatke}" action="#{korisniciZrno.azurirajPodatke()}">
+                                <f:ajax render="azuriraj_podatke korisnici_tablica"/>
+                            </h:commandButton><br/>
+                            <h:panelGroup id="azuriraj_podatke">
+                                <h:outputText value="#{m.korisnici_lbl_edit_id}" rendered="#{korisniciZrno.prikaziAzurirajPodatke}"/>
+                                <h:inputText id="korisnikId" value="#{korisniciZrno.korisnikId}" class="form-control" rendered="#{korisniciZrno.prikaziAzurirajPodatke}" disabled="true"/>
+                                <h:outputText value="#{m.korisnici_lbl_edit_korisnik}" rendered="#{korisniciZrno.prikaziAzurirajPodatke}"/>
+                                <h:inputText id="korisnik" value="#{korisniciZrno.korisnik}" class="form-control" rendered="#{korisniciZrno.prikaziAzurirajPodatke}"/>
+                                <h:outputText value="#{m.korisnici_lbl_edit_lozinka}" rendered="#{korisniciZrno.prikaziAzurirajPodatke}"/>
+                                <h:inputText id="lozinka" value="#{korisniciZrno.lozinka}" class="form-control" rendered="#{korisniciZrno.prikaziAzurirajPodatke}"/>
+                                <div style="margin-top:5px"></div>
+                                <h:commandButton class="btn btn-success" value="#{m.korisnici_btn_potvrdi_azur}" action="#{korisniciZrno.potvrdiAzuriranje()}" rendered="#{korisniciZrno.prikaziAzurirajPodatke}">
+                                    <f:ajax execute="korisnikId korisnik lozinka" render="uspjeh"/>
+                                </h:commandButton><br/>
+                                <h:panelGroup id="uspjeh">
+                                    <h:outputText class="text-success" value="#{m.korisnici_lbl_edit_uspjeh}" rendered="#{korisniciZrno.azuriranjeUspjeh}"/>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <h:panelGroup id="korisnici_tablica">
+                            <p:dataTable value="#{korisniciZrno.listaKorisnika}" var="k" paginator="true" rows="#{pregledKorisnika.limitTabliceKorisnici}" rendered="#{korisniciZrno.prikaziTablicuKorisnika}">
+                                <p:column>
+                                    <f:facet name="header">ID</f:facet>
+                                    <h:outputText value="#{k.id}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">#{m.korisnici_table_korisnik}</f:facet>
+                                    <h:outputText value="#{k.naziv}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">#{m.korisnici_table_lozinka}</f:facet>
+                                    <h:outputText value="#{k.lozinka}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </div>
+                </div>
+
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.index_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_stranica}" outcome="index"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_korisnici}" outcome="korisnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_edit}" outcome="iotEdit"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_pregled}" outcome="iotPregled"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_server_status}" outcome="serverStatus"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_dnevnik}" outcome="dnevnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_poruke}" outcome="poruka"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_mqtt}" outcome="mqtt"/>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <p:dataTable value="#{dnevnikZrno.dnevnikLista}" var="dnevnik" paginator="true" rows="#{dnevnikZrno.limitTabliceDnevnika}">
+                    <p:column style="width: 50px">
+                        <f:facet name="header">ID</f:facet>
+                        <h:outputText value="#{dnevnik.id}"/>
+                    </p:column>
+                    <p:column style="width: 50px">
+                        <f:facet name="header">#{m.dnevnik_tablica_korisnik}</f:facet>
+                        <h:outputText value="#{dnevnik.korisnik}"/>
+                    </p:column>
+                    <p:column style="width: 50px">
+                        <f:facet name="header">URL</f:facet>
+                        <h:outputText value="#{dnevnik.url}"/>
+                    </p:column>
+                    <p:column style="width: 50px">
+                        <f:facet name="header">#{m.dnevnik_tablica_ipAdresa}</f:facet>
+                        <h:outputText value="#{dnevnik.ipadresa}"/>
+                    </p:column>
+                    <p:column style="width: 50px">
+                        <f:facet name="header">#{m.dnevnik_tablica_vrijeme}</f:facet>
+                        <h:outputText value="#{dnevnik.vrijeme}"/>
+                    </p:column>
+                    <p:column style="width: 50px">
+                        <f:facet name="header">#{m.dnevnik_tablica_vrijeme_proc}</f:facet>
+                        <h:outputText value="#{dnevnik.trajanje}"/>
+                    </p:column>
+                    <p:column style="width: 50px">
+                        <f:facet name="header">Status</f:facet>
+                        <h:outputText value="#{dnevnik.status}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

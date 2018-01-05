@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.index_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_stranica}" outcome="index"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_korisnici}" outcome="korisnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_edit}" outcome="iotEdit"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_iot_pregled}" outcome="iotPregled"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_server_status}" outcome="serverStatus"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_dnevnik}" outcome="dnevnik"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_poruke}" outcome="poruka"/>
+                            </li>
+                            <li class="nav-item">
+                                <h:link class="nav-link col-sm-1" styleClass="btn" value="#{m.index_nav_mqtt}" outcome="mqtt"/>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="form-horizontal">
+                    <h:form id="naredbaServer" class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4">
+                                <h:outputLabel value="#{m.server_status_server_opis}"/>
+                            </div>
+                            <div class="col-sm-4">
+                                <h:outputLabel value="#{m.server_status_labela_unesi_naredbu}:"/>
+                                <h:outputText value=" USER #{m.server_status_output_text_korisnik}; PASSWD #{m.server_status_output_text_lozinka}; {PAUSE; | START; | STOP; | STATUS};"/>
+                                <h:inputText id="naredbaZaPoslati" class="form-control" value="#{serverStatus.naredbaZaPoslatiServer}"/>
+                                <div style="margin-top:10px"></div>
+                                <h:commandButton class="btn" value="#{m.server_status_gumb_posalji}" action="#{serverStatus.posaljiNaredbuServer()}">
+                                    <f:ajax execute="naredbaZaPoslati" render="odgovor"/>
+                                </h:commandButton>
+                            </div>
+                            <div class="col-sm-4"></div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-4" id="divOdgovor">
+                                <h:panelGroup id="odgovor">
+                                    <h:outputLabel id="odgovorLabel" value="#{serverStatus.pristigliOdgovorServer}" rendered="#{serverStatus.odgovorServer}"/>
+                                </h:panelGroup>  
+                            </div>
+                            <div class="col-sm-4"></div>
+                        </div>
+                    </h:form>
+                </div>
+                <div class="form-horizontal">
+                    <h:form id="naredbaIoT" class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4">
+                                <h:outputLabel value="#{m.server_status_iot_master_opis}"/>
+                            </div>
+                            <div class="col-sm-6">
+                                <h:outputLabel value="#{m.server_status_labela_unesi_naredbu}:"/>
+                                <h:outputText value=" USER #{m.server_status_output_text_korisnik}; PASSWD #{m.server_status_output_text_lozinka}; IoT_Master {START; | STOP; | WORK; | WAIT; | STATUS;}"/>
+                                <h:inputText id="naredbaIoTMaster" class="form-control" value="#{serverStatus.naredbaZaPoslatiIoTMaster}"/>
+                                <div style="margin-top:10px"></div>
+                                <h:commandButton class="btn" value="#{m.server_status_gumb_posalji}" action="#{serverStatus.posaljiNaredbuIotMaster()}">
+                                    <f:ajax execute="naredbaIoTMaster" render="odgovor"/>
+                                </h:commandButton>
+                            </div>
+                            <div class="col-sm-2"></div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-4" id="divOdgovor">
+                                <h:panelGroup id="odgovor">
+                                    <h:outputLabel id="odgovorLabel" value="#{serverStatus.pristigliOdgovorIoTMaster}" rendered="#{serverStatus.odgovorIotMaster}"/>
+                                </h:panelGroup>  
+                            </div>
+                            <div class="col-sm-4"></div>
+                        </div>
+                    </h:form>
+                </div>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+
