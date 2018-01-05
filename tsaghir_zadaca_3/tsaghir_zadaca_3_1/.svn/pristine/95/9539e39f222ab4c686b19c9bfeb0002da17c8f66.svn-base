@@ -1,0 +1,94 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.ws.serveri;
+
+import java.util.List;
+import javax.jws.WebService;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import org.foi.nwtis.tsaghir.baza.DataBaseHelper;
+import org.foi.nwtis.tsaghir.rest.klijenti.GMKlijent;
+import org.foi.nwtis.tsaghir.web.podaci.Lokacija;
+import org.foi.nwtis.tsaghir.web.podaci.MeteoPodaci;
+import org.foi.nwtis.tsaghir.web.podaci.MaxMin;
+import org.foi.nwtis.tsaghir.web.podaci.Uredjaj;
+
+/**
+ *
+ * @author grupa_2
+ */
+@WebService(serviceName = "GeoMeteoWS")
+public class GeoMeteoWS {
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajSveUredjaje")
+    public List<Uredjaj> dajSveUredjaje() {
+        List<Uredjaj> uredjaji = DataBaseHelper.dajSveUredaje();
+        return uredjaji;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dodajUredjaj")
+    public Boolean dodajUredjaj(@WebParam(name = "uredjaj") Uredjaj uredaj) {
+        if (uredaj.getGeoloc() == null) {
+            GMKlijent gmk = new GMKlijent();
+            Lokacija lokacija = gmk.getGeoLocation(uredaj.getAdresa());
+            if (lokacija != null) {
+                uredaj.setGeoloc(lokacija);
+            } else {
+                return false;
+            }
+        }
+        return DataBaseHelper.spremiUredaj(uredaj);
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajSveMeteoPodatkeZaUredjaj")
+    public List<MeteoPodaci> dajSveMeteoPodatkeZaUredjaj(@WebParam(name = "id") int id, @WebParam(name = "from") long from, @WebParam(name = "to") long to) {
+        List<MeteoPodaci> mp = DataBaseHelper.dajSveMeteoPodatkeZaUredajOdDo(id, from, to);
+        return mp;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajZadnjeMeteoPodatke")
+    public List<MeteoPodaci> dajZadnjeMeteoPodatke(@WebParam(name = "id") int id) {
+        List<MeteoPodaci> mp = DataBaseHelper.dajZadnjeMeteoPodatke(id);
+        return mp;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajMinMaxTempZaUredjaj")
+    public List<MaxMin> dajMinMaxTempZaUredjaj(@WebParam(name = "id") int id, @WebParam(name = "from") long from, @WebParam(name = "to") long to) {
+        return DataBaseHelper.dajMaxMinTemperaturu(id, from, to);
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajMinMaxVlagaZaUredjaj")
+    public List<MaxMin> dajMinMaxVlagaZaUredjaj(@WebParam(name = "id") int id, @WebParam(name = "from") long from, @WebParam(name = "to") long to) {
+        return DataBaseHelper.dajMaxMinVlagu(id, from, to);
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajMinMaxTlakZaUredjaj")
+    public List<MaxMin> dajMinMaxTlakZaUredjaj(@WebParam(name = "id") int id, @WebParam(name = "from") long from, @WebParam(name = "to") long to) {
+        return DataBaseHelper.dajMaxMinTlak(id, from, to);
+    }
+
+}

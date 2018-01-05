@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./predlozak.xhtml">
+
+            <ui:define name="naslov">
+                NWTiS - Zadaća 4 - Promjene 
+            </ui:define>
+
+            <ui:define name="top">
+                Pregled promjena IoT uređaja
+            </ui:define>
+
+            <ui:define name="left">
+                <h:link value="Početna" outcome="pocetna"/><br/>
+                <h:link value="Dnevnik" outcome="dnevnik"/><br/>
+                <h:link value="Iot" outcome="iot"/><br/>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form>
+                    <h:panelGrid columns="3">
+                        <h:outputLabel for="id" value="ID uređaja: "/>
+                        <h:inputText id="id" value="#{pregledPromjena.id}"/>
+                        <h:outputText value=""/>
+                        <h:outputLabel for="naziv" value="Naziv: "/>
+                        <h:inputText id="naziv" value="#{pregledPromjena.naziv}"/>
+                        <h:outputText value=""/>
+                        <h:commandButton value="Traži" action="#{pregledPromjena.trazi()}">
+                            <f:ajax execute="id naziv" render="tablicaPromjena"/>
+                        </h:commandButton>
+                    </h:panelGrid>
+                    <h:panelGroup id="tablicaPromjena" layout="block">
+                        <h:dataTable value="#{pregledPromjena.promjeneList}" var="p">
+                            <h:column>
+                                <f:facet name="header">ID promjene</f:facet>
+                                <h:outputText value="#{p.pid}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">ID uređaja</f:facet>
+                                <h:outputText value="#{p.id}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Naziv</f:facet>
+                                <h:outputText value="#{p.naziv}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Longituda</f:facet>
+                                <h:outputText value="#{p.longitude}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Latituda</f:facet>
+                                <h:outputText value="#{p.latitude}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Status</f:facet>
+                                <h:outputText value="#{p.status}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Vrijeme kreiranja</f:facet>
+                                <h:outputText value="#{p.vrijemeKreiranja}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Vrijeme promjene</f:facet>
+                                <h:outputText value="#{p.vrijemePromjene}"/>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

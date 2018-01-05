@@ -1,0 +1,18 @@
+# To change this license header, choose License Headers in Project Properties.
+# To change this template file, choose Tools | Templates
+# and open the template in the editor.
+
+pregledPoruka_promjenaJezika=Sprache \u00c4ndern
+pregledPoruka_slanjeEmailPoruke=Email senden
+pregledPoruka_odaberiMapu=Datei w\u00e4hlen
+pregledPoruka_gumbPromjeniMapu=\u00c4nderungsdatei
+pregledPoruka_trazi=Suche
+pregledPoruka_gumbTrazi=Suche
+pregledPoruka_ukupnoPoruka=Gesamt Nachricht
+pregledPoruka_gumbPrethodnePoruke=Bisherige
+pregledPoruka_gumbSljedecePoruke=N\u00e4chste
+
+index_naslov=Sprache \u00c4ndern
+index_promjena=Wechseln
+index_pregledPoruka=Nachrishten anzeigen
+index_saljiPoruku=Nachricht senden

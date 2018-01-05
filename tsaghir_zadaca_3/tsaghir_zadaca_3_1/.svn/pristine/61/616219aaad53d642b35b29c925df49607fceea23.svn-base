@@ -1,0 +1,116 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.baza;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.foi.nwtis.tsaghir.konfiguracije.Konfiguracija;
+import org.foi.nwtis.tsaghir.web.podaci.Uredjaj;
+
+/**
+ *
+ * @author Generalko
+ */
+public class DataBaseHelper {
+
+    private static DataBaseHelper instance = null;
+    private static Connection connection;
+
+    private static String driver;
+    private static String serverDatabase;
+    private static String userDatabase;
+    private static String userUsername;
+    private static String userPassword;
+
+    private DataBaseHelper(Konfiguracija konf) {
+        driver = konf.dajPostavku("driver.database.derby");
+        serverDatabase = konf.dajPostavku("server.database");
+        userDatabase = konf.dajPostavku("user.database");
+        userUsername = konf.dajPostavku("user.username");
+        userPassword = konf.dajPostavku("user.password");
+    }
+
+    public static DataBaseHelper getInstance(Konfiguracija konf) {
+        if (instance == null) {
+            instance = new DataBaseHelper(konf);
+        }
+        return instance;
+    }
+    
+    public static boolean spremiUredaj(Uredjaj ured){
+        if(!postojiUredaj(ured.getNaziv())){
+            try {
+                Statement stmt = null;
+                String query = String.format("INSERT INTO uredaji (id,naziv,latitude,longitude) VALUES ((SELECT id FROM uredaji ORDER BY id DESC FETCH FIRST ROW ONLY) + 1,'%s',%f,%f)"
+                        , ured.getNaziv(), Float.parseFloat(ured.getGeoloc().getLatitude()),  Float.parseFloat(ured.getGeoloc().getLongitude()));
+                stmt = connect().createStatement();
+                stmt.executeUpdate(query);
+                disconnect();
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+    
+    
+    private static boolean postojiUredaj(String naziv){
+        Statement stmt = null;
+        String query = "select*from uredaji where naziv='" + naziv+"'";
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            disconnect();
+        }
+    }
+    
+     /**
+     * Metoda koja vrši spajanje na MySQL server
+     * @return 
+     */
+    private static Connection connect() {
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection(serverDatabase + userDatabase,
+                        userUsername, userPassword);
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return connection;
+    }
+
+    /**
+     * Metoda s kojom se odspaja sa MySQL servera
+     */
+    private static void disconnect() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+}

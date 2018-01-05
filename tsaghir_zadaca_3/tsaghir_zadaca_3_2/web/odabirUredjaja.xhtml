@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Odabir uređaja</title>
+        <link href="resources/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <meta charset="UTF-8"/>
+    </h:head>
+    <h:body>
+        <!--Navigation bar-->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Odabir uređaja</a>
+                </div>
+            </div>
+        </nav>
+        <!--Forma-->
+        <h:form id="forma">
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    <div class="col-xs-2 text-center">
+                        <p:outputLabel>Naziv i adresa: </p:outputLabel>
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <p:inputText class="form-control" value="#{odabirUredjaja.naziv}" >
+                                    <p:ajax event="change" listener="#{odabirUredjaja.ukljuciIskljuciGumb()}" update="forma"/>
+                                </p:inputText>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <p:inputText class="form-control" value="#{odabirUredjaja.adresa}">
+                                    <p:ajax event="change" listener="#{odabirUredjaja.ukljuciIskljuciGumb()}" update="forma"/>
+                                </p:inputText>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <h:commandButton class="btn col-sm-11 text-right" value="Upiši SOAP" action="#{odabirUredjaja.upisiSoap()}" disabled="#{odabirUredjaja.gumbUpisi}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    <div class="col-xs-2 text-center"></div>
+                    <div class="col-xs-10">
+                        <div class="col-sm-8"></div>
+                        <div class="col-sm-2">
+                            <h:commandButton class="btn col-sm-11 text-right" value="Upiši REST" action="#{odabirUredjaja.upisiRest()}" disabled="#{odabirUredjaja.gumbUpisi}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Lista uređaja-->
+            <div class="form-group"></div>
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    <div class="col-xs-2 text-center">
+                        <p:outputLabel>Uređaji: </p:outputLabel>
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="col-xs-4">
+                            <h:selectManyListbox class="form-control" value="#{odabirUredjaja.id}" size="5">
+                                <f:selectItems value="#{odabirUredjaja.uredjaji}"
+                                               var="uredaj"
+                                               itemLabel="#{uredaj.naziv}"
+                                               itemValue="#{uredaj.id}"/>
+                                <f:ajax event="change" listener="#{odabirUredjaja.ukljuciIskljuciGumb()}" render="forma"/>
+                            </h:selectManyListbox>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group col-sm-12">
+                                <div class="col-xs-2 text-center">
+                                    <p:outputLabel>Od-do: </p:outputLabel>
+                                </div>
+
+                                <div class="col-xs-6">
+                                    <p:calendar value="#{odabirUredjaja.from}">
+                                        <p:ajax event="dateSelect" listener="#{odabirUredjaja.ukljuciIskljuciGumb()}" update="forma"/>
+                                    </p:calendar>
+                                    <br/><br/>
+                                    <p:calendar value="#{odabirUredjaja.to}">
+                                        <p:ajax event="dateSelect" listener="#{odabirUredjaja.ukljuciIskljuciGumb()}" update="forma"/>
+                                    </p:calendar><br/>
+                                </div>
+                                <div class="col-sm-4">
+                                    <h:commandButton class="btn text-right btn-block" value="Preuzmi SOAP" disabled="#{odabirUredjaja.gumbPreuzmiSoap}" action="#{odabirUredjaja.preuzmiSoap()}"/>
+                                    <h:commandButton class="btn col-sm-2 text-right btn-block" value="Preuzmi REST" disabled="#{odabirUredjaja.gumbPreuzmiRest}" action="#{odabirUredjaja.preuzmiRest()}"/>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Tablica-->
+            <h:dataTable class="table table-bordered" value="#{odabirUredjaja.meteoPodaci}" var="p" >
+                <h:column>
+                    <f:facet name="header">Vrijeme</f:facet>
+                    <h:outputText value="#{p.weatherValue}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Temperatura C</f:facet>
+                    <h:outputText value="#{p.temperatureValue}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Temperatura(min) C</f:facet>
+                    <h:outputText value="#{p.temperatureMin}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Temperatura(max) C</f:facet>
+                    <h:outputText value="#{p.temperatureMax}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Vlaga</f:facet>
+                    <h:outputText value="#{p.humidityValue}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Tlak hPa</f:facet>
+                    <h:outputText value="#{p.pressureValue}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Brzina vjetra</f:facet>
+                    <h:outputText value="#{p.windSpeedValue}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Zadnji put ažurirano</f:facet>
+                    <h:outputText value="#{p.lastUpdate}"/>
+                </h:column>
+            </h:dataTable>
+        </h:form>
+    </h:body>
+</html>
+

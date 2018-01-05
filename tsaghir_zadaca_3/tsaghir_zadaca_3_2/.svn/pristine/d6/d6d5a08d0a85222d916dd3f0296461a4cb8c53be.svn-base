@@ -1,0 +1,48 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.zrna;
+
+import java.util.List;
+import javax.inject.Named;
+import javax.enterprise.context.Dependent;
+import org.foi.nwtis.tsaghir.ws.klijenti.MeteoWSKlijent;
+import org.foi.nwtis.tsaghir.ws.klijenti.Uredjaj;
+
+/**
+ *
+ * @author grupa_2
+ */
+@Named(value = "odabirUredjaja")
+@Dependent
+public class OdabirUredjaja {
+    private List<Uredjaj> uredjaji;
+    private String id;
+    /**
+     * Creates a new instance of OdabirUredjaja
+     */
+    public OdabirUredjaja() {
+    }
+
+    public List<Uredjaj> getUredjaji() {
+        uredjaji = MeteoWSKlijent.dajSveUredjaje();
+        return uredjaji;
+    }
+
+    public void setUredjaji(List<Uredjaj> uredjaji) {
+        this.uredjaji = uredjaji;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    
+    
+}

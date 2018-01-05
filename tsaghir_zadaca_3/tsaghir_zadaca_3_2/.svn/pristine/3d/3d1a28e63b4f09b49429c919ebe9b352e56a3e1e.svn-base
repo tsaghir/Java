@@ -1,0 +1,190 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.zrna;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
+import org.foi.nwtis.tsaghir.ws.klijenti.MeteoPodaci;
+import org.foi.nwtis.tsaghir.ws.klijenti.MeteoREST;
+import org.foi.nwtis.tsaghir.ws.klijenti.MeteoWSKlijent;
+import org.foi.nwtis.tsaghir.ws.klijenti.Uredjaj;
+import org.primefaces.json.JSONArray;
+import org.primefaces.json.JSONObject;
+
+/**
+ *
+ * @author grupa_2
+ */
+@Named(value = "odabirUredjaja")
+@SessionScoped
+public class OdabirUredjaja implements Serializable {
+
+    private Date from;
+    private Date to;
+    private List<Uredjaj> uredjaji;
+    private List<String> id;
+    private String naziv;
+    private String adresa;
+    private MeteoREST restServis;
+    private List<MeteoPodaci> meteoPodaci = null;
+    private boolean gumbPreuzmiRest = true;
+    private boolean gumbPreuzmiSoap = true;
+
+    public OdabirUredjaja() {
+        restServis = new MeteoREST();
+        meteoPodaci = new ArrayList<>();
+    }
+
+    public String upisiSoap() {
+        Uredjaj ured = new Uredjaj();
+        ured.setNaziv(naziv);
+        ured.setAdresa(adresa);
+        if (!MeteoWSKlijent.dodajUredjaj(ured)) {
+            return "GreskaKodDodavanja";
+        }
+        return null;
+    }
+
+    public String upisiRest() {
+        JSONObject json = new JSONObject();
+        json.put("naziv", naziv);
+        json.put("adresa", adresa);
+        json.put("lat", "");
+        json.put("lon", "");
+        StringWriter out = new StringWriter();
+        json.write(out);
+        restServis.postJson(out.toString());
+        return null;
+    }
+
+    public void ukljuciIskljuciGumb() {
+        if (id != null) {
+            if (id.size() == 1) {
+                if (getFrom() != null && getTo() != null) {
+                    gumbPreuzmiSoap = false;
+                    gumbPreuzmiRest = true;
+                }
+            } else if (id.size() >= 2) {
+                gumbPreuzmiRest = false;
+                gumbPreuzmiSoap = true;
+            } else if (id.size() == 0) {
+                gumbPreuzmiRest = true;
+                gumbPreuzmiSoap = true;
+            }
+        }
+    }
+
+    public String preuzmiSoap() {
+        long vrijeme1 = from.getTime() / 1000;
+        long vrijeme2 = to.getTime() / 1000;
+        meteoPodaci = MeteoWSKlijent.dajSveMeteoPodatkeZaUredjaj(Integer.parseInt(id.get(0)), vrijeme1, vrijeme2);
+        return null;
+    }
+
+    public String preuzmiRest() {
+        meteoPodaci.clear();
+        for (String id : id) {
+            String rezultat = restServis.dajMeteoPodatke(id);
+            procitajJson(rezultat);
+        }
+        return null;
+    }
+
+    private void procitajJson(String rezultat) {
+        JSONArray jArray = new JSONArray(rezultat);
+        for (int i = 0; i < jArray.length(); i++) {
+            JSONObject obj = jArray.getJSONObject(i);
+            MeteoPodaci mp = new MeteoPodaci();
+            mp.setTemperatureMax(Float.parseFloat(obj.get("tempmax").toString()));
+            mp.setTemperatureMin(Float.parseFloat(obj.get("tempmin").toString()));
+            mp.setTemperatureValue(Float.parseFloat(obj.get("temp").toString()));
+            mp.setHumidityValue(Float.parseFloat(obj.get("vlaga").toString()));
+            mp.setPressureValue(Float.parseFloat(obj.get("tlak").toString()));
+            mp.setWindSpeedValue(Float.parseFloat(obj.get("vjetar").toString()));
+            mp.setWeatherValue(obj.get("vrijemeopis").toString());
+            meteoPodaci.add(mp);
+        }
+    }
+
+    public List<Uredjaj> getUredjaji() {
+        uredjaji = MeteoWSKlijent.dajSveUredjajeSoap();
+        return uredjaji;
+    }
+
+    public void setUredjaji(List<Uredjaj> uredjaji) {
+        this.uredjaji = uredjaji;
+    }
+
+    public Date getFrom() {
+        return from;
+    }
+
+    public void setFrom(Date from) {
+        this.from = from;
+    }
+
+    public Date getTo() {
+        return to;
+    }
+
+    public void setTo(Date to) {
+        this.to = to;
+    }
+
+    public String getNaziv() {
+        return naziv;
+    }
+
+    public void setNaziv(String naziv) {
+        this.naziv = naziv;
+    }
+
+    public String getAdresa() {
+        return adresa;
+    }
+
+    public void setAdresa(String adresa) {
+        this.adresa = adresa;
+    }
+
+    public List<String> getId() {
+        return id;
+    }
+
+    public void setId(List<String> id) {
+        this.id = id;
+    }
+
+    public boolean isGumbPreuzmiRest() {
+        return gumbPreuzmiRest;
+    }
+
+    public void setGumbPreuzmiRest(boolean gumbPreuzmiRest) {
+        this.gumbPreuzmiRest = gumbPreuzmiRest;
+    }
+
+    public boolean isGumbPreuzmiSoap() {
+        return gumbPreuzmiSoap;
+    }
+
+    public void setGumbPreuzmiSoap(boolean gumbPreuzmiSoap) {
+        this.gumbPreuzmiSoap = gumbPreuzmiSoap;
+    }
+
+    public List<MeteoPodaci> getMeteoPodaci() {
+        return meteoPodaci;
+    }
+
+    public void setMeteoPodaci(List<MeteoPodaci> meteoPodaci) {
+        this.meteoPodaci = meteoPodaci;
+    }
+
+}

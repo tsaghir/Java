@@ -1,0 +1,41 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.ejb.sb;
+
+import javax.ejb.Stateless;
+import javax.ejb.LocalBean;
+import org.foi.nwtis.tsaghir.rest.klijenti.GMKlijent;
+import org.foi.nwtis.tsaghir.web.podaci.Lokacija;
+import org.foi.nwtis.tsaghir.web.podaci.MeteoPrognoza;
+
+/**
+ *
+ * @author grupa_2
+ */
+@Stateless
+@LocalBean
+public class MeteoIoTKlijent {
+
+    private String apiKey;
+
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
+    public void postaviKorisnickePodatke(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public Lokacija dajLokaciju(String adresa) {
+        GMKlijent gmKlijent = new GMKlijent();
+        return gmKlijent.getGeoLocation(adresa);
+    }
+
+    public MeteoPrognoza[] dajMeteoPrognoze(String adresa) {
+        GMKlijent gmKlijent = new GMKlijent();
+        return null;
+    }
+    
+    
+}

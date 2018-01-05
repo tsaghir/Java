@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.slanjePoruka_naslov}</title>
+            <h:outputStylesheet library="css" name="bootstrap.css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.pregledPoruka_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:commandLink class="nav-link col-sm-1" styleClass="btn" value="#{m.index_naslov}" action="#{slanjePoruke.pocetna()}" />
+                            </li>
+                            <li class="nav-item">
+                                <h:commandLink class="nav-link col-sm-2" styleClass="btn" value="#{m.index_pregledPoruka}" action="#{lokalizator.pregledPoruka}"/>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="form-group">
+                    <h:outputLabel value="#{m.slanjePoruka_salje}:" styleClass="control-label col-sm-1"/>
+                    <div class="col-sm-2">
+                        <h:inputText value="#{slanjePoruke.salje}" class="form-control col-lg-4"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel value="#{m.slanjePoruka_prima}:" styleClass="control-label col-sm-1"/>
+                    <div class="col-sm-2">
+                        <h:inputText value="#{slanjePoruke.prima}" class="form-control col-lg-4"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h:outputLabel value="#{m.slanjePoruka_predmet}:" styleClass="control-label col-sm-1"/>
+                    <div class="col-sm-2">
+                        <h:inputText value="#{slanjePoruke.predmet}" class="form-control col-lg-4"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h:outputLabel value="#{m.slanjePoruka_sadrzaj}:" styleClass="control-label col-sm-1"/>
+                    <div class="form-group col-sm-3">
+                        <h:inputTextarea class="form-control" rows="5" value="#{slanjePoruke.sadrzaj}"/>
+                        <div class="control-label">
+                            <h:commandButton a:autocorrect="off" value="#{m.slanjePoruka_salji}" action="#{slanjePoruke.saljiPoruku()}" class="btn col-lg-5 pull-right"/>
+                        </div> 
+                    </div>
+                </div>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

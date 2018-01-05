@@ -1,0 +1,176 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.dretve;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.servlet.ServletContext;
+import org.foi.nwtis.tsaghir.konfiguracije.Konfiguracija;
+import org.foi.nwtis.tsaghir.web.pomagaci.DataBaseHelper;
+import org.foi.nwtis.tsaghir.web.pomagaci.RegexHelper;
+
+/**
+ *
+ * @author grupa_2
+ */
+public class ObradaPoruka extends Thread {
+
+    private boolean prekid_obrade = false;
+    private ServletContext sc = null;
+    private Session session;
+    private String folderOstalo;
+
+    @Override
+    public void interrupt() {
+        prekid_obrade = true;
+        super.interrupt(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void run() {
+        Konfiguracija konf = (Konfiguracija) sc.getAttribute("Mail_Konfig");
+        String server = konf.dajPostavku("mail.server");
+        int port = Integer.parseInt(konf.dajPostavku("mail.port"));
+        String korisnik = konf.dajPostavku("mail.usernameThread");
+        String lozinka = konf.dajPostavku("mail.passwordThread");
+        int trajanjeCiklusa = Integer.parseInt(konf.dajPostavku("mail.timeSecThread"));
+        folderOstalo = konf.dajPostavku("mail.folderOther");
+        //TODO za ostale parametre
+        int trajanjeObrade = 0;
+        //TODO odredi trajanje obrade
+        int redniBrojCiklusa = 0;
+
+        while (!prekid_obrade) {
+            // Start the session
+            java.util.Properties properties = System.getProperties();
+            properties.put("mail.smtp.host", server);
+            session = Session.getInstance(properties, null);
+
+            // Connect to the store
+            try {
+                Store store = session.getStore("imap");
+                store.connect(server, korisnik, lozinka);
+                // Open the INBOX folder
+                Folder folderInbox = store.getFolder("INBOX");
+                folderInbox.open(Folder.READ_ONLY);
+
+                Message[] messages = folderInbox.getMessages();
+                if (messages.length > 0) {
+                    for (int i = 0; i < messages.length; i++) {
+                        Message m = messages[i];
+                        if (m.getContent() instanceof String) {
+                            String sadrzajPoruke = m.getContent().toString();
+                            switch (obradiPoruku(sadrzajPoruke)) {
+                                case RegexHelper.ADD:
+                                    Matcher matcherAdd = RegexHelper.getMatcher();
+                                    if (dodajPodatkeUredaji(matcherAdd)) {
+                                        System.out.println(sadrzajPoruke + " (Dodano u tablicu uredaji)");
+                                    } else {
+                                        System.out.println("Greška, već postoji uredaj u bazi");
+                                    }
+                                    break;
+                                case RegexHelper.TEMP:
+                                    Matcher matcherTemp = RegexHelper.getMatcher();
+                                    if (dodajPodatkeTemperatura(matcherTemp)) {
+                                        System.out.println(sadrzajPoruke + " (Dodano u tablicu temperature)");
+                                    } else {
+                                        System.out.println("Greška, ne postoji taj uredaj u bazi");
+                                    }
+                                    break;
+                                case RegexHelper.EVENT:
+                                    //todo event
+                                    break;
+                                case RegexHelper.FAIL:
+                                    if (premjestiPorukuFolderOstalo(m, folderInbox, store)) {
+                                        m.setFlag(Flags.Flag.DELETED, true);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    folderInbox.close(true);
+                    store.close();
+                }
+                redniBrojCiklusa++;
+                System.out.println("Obrada poruka u ciklusu: " + redniBrojCiklusa);
+                sleep(trajanjeCiklusa * 1000 - trajanjeObrade);
+            } catch (MessagingException | InterruptedException | IOException ex) {
+                Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
+
+    private String obradiPoruku(String sadrzajPoruke) {
+        return RegexHelper.odrediNaredbu(sadrzajPoruke);
+    }
+
+    private boolean dodajPodatkeUredaji(Matcher matcher) {
+        int id = Integer.parseInt(matcher.group(1));
+        String naziv = matcher.group(2);
+        float latitude = Float.parseFloat(matcher.group(3));
+        float longitude = Float.parseFloat(matcher.group(3));
+        return DataBaseHelper.dodajUredaj(id, naziv, latitude, longitude);
+    }
+
+    private boolean dodajPodatkeTemperatura(Matcher matcher) {
+        int id = Integer.parseInt(matcher.group(1));
+        float temp = Float.parseFloat(matcher.group(4));
+        String vrijeme_mjerenja ="";
+        String vrijeme_kreiranja="";
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            vrijeme_mjerenja = matcher.group(2) + " " + matcher.group(3);
+            Date datumFormat = sdf.parse(vrijeme_mjerenja);
+            vrijeme_mjerenja = datumFormat.toString();
+            Date sada = new Date();
+            vrijeme_kreiranja = sdf.format(sada);
+            
+        } catch (ParseException ex) {
+            Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, "Greška kod pretvaranja datuma", ex);
+        }
+        return DataBaseHelper.dodajTemperature(id, temp, vrijeme_mjerenja, vrijeme_kreiranja);
+    }
+
+    private boolean premjestiPorukuFolderOstalo(Message poruka, Folder folderInbox, Store store) {
+        try {
+            ArrayList<Message> porukeZaObrisati = new ArrayList<>();
+            Folder ostaloFolder = store.getFolder(folderOstalo);
+            porukeZaObrisati.add(poruka);
+            Message[] poljePoruka = new Message[porukeZaObrisati.size()];
+            poljePoruka = porukeZaObrisati.toArray(poljePoruka);
+            folderInbox.copyMessages(poljePoruka, ostaloFolder);
+            return true;
+        } catch (MessagingException ex) {
+            Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    @Override
+    public synchronized void start() {
+        super.start();
+    }
+
+    public void setSc(ServletContext sc) {
+        this.sc = sc;
+    }
+
+}

@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.pregledPoruka_naslov}</title>
+            <h:outputStylesheet library="css" name="bootstrap.css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.pregledPoruka_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:commandLink class="nav-link col-sm-1" styleClass="btn" value="#{m.index_naslov}" action="#{slanjePoruke.pocetna}" />
+                            </li>
+                            <li class="nav-item">
+                                <h:commandLink class="nav-link col-sm-2" styleClass="btn" value="#{m.index_saljiPoruku}" action="#{lokalizator.saljiPoruku}" />
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="form-group">
+                    <h:outputLabel value="#{m.pregledPoruka_odaberiMapu}"  styleClass="control-label col-sm-1"/>
+                    <div class="col-sm-2">
+                        <h:selectOneMenu class="form-control col-lg-4" value="#{pregledPoruka.odabranaMapa}">
+                            <f:selectItems value="#{pregledPoruka.mape}" var="f" 
+                                           itemLabel="#{f.labela}" itemValue="#{f.vrijednost}"/>
+                        </h:selectOneMenu>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <h:commandButton value="#{m.pregledPoruka_gumbPromjeniMapu}" class="btn col-sm-1" action="#{pregledPoruka.promjenaMape()}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h:outputLabel value="#{m.pregledPoruka_trazi}" styleClass="control-label col-sm-1"/>
+                    <div class="col-sm-2">
+                        <h:inputText class="form-control col-lg-4" value="#{pregledPoruka.traziPoruke}"/>
+                    </div>
+                    <div class="col-sm-6">
+                        <h:commandButton value="#{m.pregledPoruka_gumbTrazi}"  class="btn col-sm-1" action="#{pregledPoruka.traziPoruke()}"/>
+                    </div>
+                </div>
+                <h:dataTable class="table table-bordered" value="#{pregledPoruka.poruke}" var="p">
+                    <h:column>
+                        <f:facet name="header">#{m.pregledPoruka_tablicaID}</f:facet>
+                        <h:outputText value="#{p.id}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">#{m.pregledPoruka_tablicaSalje}</f:facet>
+                        <h:outputText value="#{p.salje}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">#{m.pregledPoruka_tablicaPredmet}</f:facet>
+                        <h:outputText value="#{p.predmet}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">#{m.pregledPoruka_tablicaVrijemeSlanja}</f:facet>
+                        <h:outputText value="#{p.vrijemeSlanja}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">#{m.pregledPoruka_tablicaSadrzaj}</f:facet>
+                        <h:outputText value="#{p.sadrzaj}"/>
+                    </h:column>
+                </h:dataTable>
+                <br/>
+                <div class="form-group" >
+                    <div class="col-md-1">
+                        <h:outputLabel value="#{m.pregledPoruka_ukupnoPoruka}" styleClass="control-label"/>
+                    </div>
+                    
+                    <div class="form-control-static col-sm-1 text-center">
+                        <h:outputLabel value="#{pregledPoruka.ukupnoPorukaMapa}" />
+                    </div>
+                    <div class="btn group col-md-1">
+                        <h:commandButton value="#{m.pregledPoruka_gumbPrethodnePoruke}"  class="btn col-sm-7" action="#{pregledPoruka.prethodnePoruke()}" disabled="#{pregledPoruka.isPrethodnaGumb()}"/>
+                        <h:commandButton value="#{m.pregledPoruka_gumbSljedecePoruke}"  class="btn" action="#{pregledPoruka.sljedecePoruke()}" disabled="#{pregledPoruka.isSljedecaGumb()}"/>
+                    </div>
+                </div>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

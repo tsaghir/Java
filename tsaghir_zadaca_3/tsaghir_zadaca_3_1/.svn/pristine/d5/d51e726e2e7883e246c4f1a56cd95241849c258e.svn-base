@@ -1,0 +1,66 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.ws.serveri;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.jws.WebService;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import org.foi.nwtis.tsaghir.web.podaci.Lokacija;
+import org.foi.nwtis.tsaghir.web.podaci.MeteoPodaci;
+import org.foi.nwtis.tsaghir.web.podaci.Uredjaj;
+
+/**
+ *
+ * @author grupa_2
+ */
+@WebService(serviceName = "GeoMeteoWS")
+public class GeoMeteoWS {
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajSveUredjaje")
+    public List<Uredjaj> dajSveUredjaje() {
+        //TODO write your implementation code here:
+        ArrayList<Uredjaj> uredjaji = new ArrayList<>();
+        int i = 0;
+        Lokacija loc = new Lokacija("0.0", "0.0");
+        for (; i < 10; i++) {
+            uredjaji.add(new Uredjaj(i, "IoT " + i, loc));
+        }
+        return uredjaji;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dodajUredjaj")
+    public Boolean dodajUredjaj(@WebParam(name = "uredjaj") Uredjaj Uredjaj) {
+
+        //TODO dovršiti upis u bazu podataka
+        return null;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "dajSveMeteoPodatkeZaUredjaj")
+    public List<MeteoPodaci> dajSveMeteoPodatkeZaUredjaj(@WebParam(name = "id") int id, @WebParam(name = "from") long from, @WebParam(name = "to") long to) {
+        //TODO dovrsiti preuzimanje meteo podataka iz baze podataka
+        List<MeteoPodaci> mp = new ArrayList<>();
+        mp.add(new MeteoPodaci(new Date(), new Date(), 21.2f, 5.0f, 25.0f, "C", 70f, "%", 1010.2f, "hPa", 0.0f, "", 0.0f, "", "", 1, "", "OK", 0.0f, "", "", 7, "", "", new Date()));
+        mp.add(new MeteoPodaci(new Date(), new Date(), 21.3f, 5.0f, 25.0f, "C", 70f, "%", 1010.2f, "hPa", 0.0f, "", 0.0f, "", "", 1, "", "OK", 0.0f, "", "", 7, "", "", new Date()));
+        mp.add(new MeteoPodaci(new Date(), new Date(), 21.4f, 5.0f, 25.0f, "C", 70f, "%", 1010.2f, "hPa", 0.0f, "", 0.0f, "", "", 1, "", "OK", 0.0f, "", "", 7, "", "", new Date()));
+        mp.add(new MeteoPodaci(new Date(), new Date(), 21.5f, 5.0f, 25.0f, "C", 70f, "%", 1010.2f, "hPa", 0.0f, "", 0.0f, "", "", 1, "", "OK", 0.0f, "", "", 7, "", "", new Date()));
+        mp.add(new MeteoPodaci(new Date(), new Date(), 21.6f, 5.0f, 25.0f, "C", 70f, "%", 1010.2f, "hPa", 0.0f, "", 0.0f, "", "", 1, "", "OK", 0.0f, "", "", 7, "", "", new Date()));
+        
+        return mp;
+    }
+
+}

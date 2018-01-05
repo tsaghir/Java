@@ -1,0 +1,84 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.pomagaci;
+
+import javax.servlet.ServletContext;
+import org.foi.nwtis.tsaghir.konfiguracije.Konfiguracija;
+import org.foi.nwtis.tsaghir.web.slusaci.SlusacAplikacije;
+
+/**
+ *
+ * @author Generalko
+ */
+public class KonfiguracijaHelper {
+
+    public static String SERVER_DATABASE;
+    public static String ADMIN_USERNAME ;
+    public static String ADMIN_PASSWORD;
+    public static String ADMIN_DATABASE ;
+    public static String USER_USERNAME;
+    public static String USER_PASSWORD ;
+    public static String USER_DATABASE;
+    public static String DRIVER_ODBC;
+    public static String DRIVER_MYSQL;
+    public static String DRIVER_DERBY;
+    public static String DRIVER_POSTGRESQL;
+    public static String MAIL_SERVER;
+    public static String MAIL_PORT;
+    public static String MAIL_USERNAME_THREAD;
+    public static String MAIL_PASSWORD_THREAD;
+    public static int MAIL_TIME_SEC_THREAD;
+    public static String MAIL_NUM_MESSAGE;
+    public static String MAIL_SUBJECT;
+    public static String MAIL_FOLDER_NWTIS;
+    public static String MAIL_FOLDER_OTHER;
+    public static String MAIL_USERNAME_STATISTICS;
+    public static String MAIL_SUBJECT_STATISTICS;
+    public static String MAIL_USERNAME_VIEW;
+    public static String MAIL_PASSWORD_VIEW;
+
+    private static Konfiguracija konf = null;
+    private static KonfiguracijaHelper instance = null;
+
+    private KonfiguracijaHelper() {
+        konf = SlusacAplikacije.getKonfig();
+        postaviKonstante();
+    }
+
+    public static KonfiguracijaHelper getInstance() {
+        if (instance == null) {
+            instance = new KonfiguracijaHelper();
+        }
+        return instance;
+    }
+
+    private void postaviKonstante() {
+        SERVER_DATABASE = KonfiguracijaHelper.konf.dajPostavku("server.database");
+        ADMIN_USERNAME = KonfiguracijaHelper.konf.dajPostavku("admin.username");
+        ADMIN_PASSWORD = KonfiguracijaHelper.konf.dajPostavku("admin.password");
+        ADMIN_DATABASE = KonfiguracijaHelper.konf.dajPostavku("admin.database");
+        USER_USERNAME = KonfiguracijaHelper.konf.dajPostavku("user.username");
+        USER_PASSWORD = KonfiguracijaHelper.konf.dajPostavku("user.password");
+        USER_DATABASE = KonfiguracijaHelper.konf.dajPostavku("user.database");
+        DRIVER_ODBC = KonfiguracijaHelper.konf.dajPostavku("driver.database.odbc");
+        DRIVER_MYSQL = KonfiguracijaHelper.konf.dajPostavku("driver.database.mysql");
+        DRIVER_DERBY = KonfiguracijaHelper.konf.dajPostavku("driver.database.derby");
+        DRIVER_POSTGRESQL = KonfiguracijaHelper.konf.dajPostavku("driver.database.postgresql");
+        MAIL_SERVER = KonfiguracijaHelper.konf.dajPostavku("mail.server");
+        MAIL_PORT = KonfiguracijaHelper.konf.dajPostavku("mail.port");
+        MAIL_USERNAME_THREAD = KonfiguracijaHelper.konf.dajPostavku("mail.usernameThread");
+        MAIL_PASSWORD_THREAD = KonfiguracijaHelper.konf.dajPostavku("mail.passwordThread");
+        MAIL_TIME_SEC_THREAD = Integer.parseInt(KonfiguracijaHelper.konf.dajPostavku("mail.timeSecThread"));
+        MAIL_NUM_MESSAGE = KonfiguracijaHelper.konf.dajPostavku("mail.numMessages");
+        MAIL_SUBJECT = KonfiguracijaHelper.konf.dajPostavku("mail.subject");
+        MAIL_FOLDER_NWTIS = KonfiguracijaHelper.konf.dajPostavku("mail.folderNWTiS");
+        MAIL_FOLDER_OTHER = KonfiguracijaHelper.konf.dajPostavku("mail.folderOther");
+        MAIL_USERNAME_STATISTICS = KonfiguracijaHelper.konf.dajPostavku("mail.usernameStatistics");
+        MAIL_SUBJECT_STATISTICS = KonfiguracijaHelper.konf.dajPostavku("mail.subjectStatistics");
+        MAIL_USERNAME_VIEW = KonfiguracijaHelper.konf.dajPostavku("mail.usernameView");
+        MAIL_PASSWORD_VIEW = KonfiguracijaHelper.konf.dajPostavku("mail.passwordView");
+    }
+}

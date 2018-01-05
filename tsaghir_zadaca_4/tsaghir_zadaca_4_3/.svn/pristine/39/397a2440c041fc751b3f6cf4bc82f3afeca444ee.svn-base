@@ -1,0 +1,193 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.zrna;
+
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.ejb.EJB;
+import org.foi.nwtis.tsaghir.ejb.eb.Uredaji;
+import org.foi.nwtis.tsaghir.ejb.sb.MeteoIoTKlijent;
+import org.foi.nwtis.tsaghir.ejb.sb.UredajiFacade;
+import org.foi.nwtis.tsaghir.rest.klijenti.MeteoPodaci;
+import org.foi.nwtis.tsaghir.rest.klijenti.MeteoPrognoza;
+import org.foi.nwtis.tsaghir.rest.klijenti.Uredjaj;
+import org.foi.nwtis.tsaghir.web.kontrole.Izbornik;
+import org.foi.nwtis.tsaghir.web.podaci.Lokacija;
+
+/**
+ *
+ * @author grupa_2
+ */
+@Named(value = "odabirIotPrognoza")
+@SessionScoped
+public class OdabirIotPrognoza implements Serializable {
+
+    @EJB
+    private UredajiFacade uredajiFacade;
+
+    @EJB
+    private MeteoIoTKlijent meteoIoTKlijent;
+
+    private String noviId;
+    private String noviNaziv;
+    private String noviAdresa;
+    private List<Izbornik> raspoloziviIot = new ArrayList<>();
+    private List<Izbornik> odabraniIot = new ArrayList<>();
+    private List<String> popisRaspoloziviIot = new ArrayList<>();
+    private List<String> popisOdabraniIot = new ArrayList<>();
+    private String azurirajId;
+    private String azurirajNaziv;
+    private String azurirajAdresa;
+    private List<MeteoPrognoza> meteoPrognoze = new ArrayList<>();
+    private boolean azuriranje = false;
+    private boolean prognoze = false;
+    private String gumbPregledPrognoza = "Pregled prognoza";
+
+    /*
+     * Creates a new instance of OdabirIotPrognoza
+     */
+    public OdabirIotPrognoza() {
+
+    }
+
+    public String dodajIotUredaj() {
+        Lokacija l = meteoIoTKlijent.dajLokaciju(noviAdresa);
+        Uredaji uredaji = new Uredaji(Integer.parseInt(noviId), noviNaziv, Float.parseFloat(l.getLatitude()), Float.parseFloat(l.getLongitude()), 0, new Date(), new Date());
+        uredajiFacade.create(uredaji);
+        preuzmiRaspoloziveIotUredaje();
+        return "";
+    }
+
+    private void preuzmiRaspoloziveIotUredaje() {
+        List<Uredaji> raspolozivi = uredajiFacade.findAll();
+        for (Uredaji uredaji : raspolozivi) {
+            raspoloziviIot.add(new Izbornik(uredaji.getNaziv(), uredaji.getId().toString()));
+        }
+    }
+
+    /** GETTERS AND SETTERS
+     * @return
+     */
+    public String getNoviId() {
+        //TODO nesto izmisliti s ovom metodom da je ne poziva više puta  
+        preuzmiRaspoloziveIotUredaje();
+        return noviId;
+    }
+
+    public void setNoviId(String noviId) {
+        this.noviId = noviId;
+    }
+
+    public String getNoviNaziv() {
+        return noviNaziv;
+    }
+
+    public void setNoviNaziv(String noviNaziv) {
+        this.noviNaziv = noviNaziv;
+    }
+
+    public List<Izbornik> getRaspoloziviIot() {
+        return raspoloziviIot;
+    }
+
+    public void setRaspoloziviIot(List<Izbornik> raspoloziviIot) {
+        this.raspoloziviIot = raspoloziviIot;
+    }
+
+    public List<Izbornik> getOdabraniIot() {
+        return odabraniIot;
+    }
+
+    public void setOdabraniIot(List<Izbornik> odabraniIot) {
+        this.odabraniIot = odabraniIot;
+    }
+
+    public List<String> getPopisRaspoloziviIot() {
+        return popisRaspoloziviIot;
+    }
+
+    public void setPopisRaspoloziviIot(List<String> popisRaspoloziviIot) {
+        this.popisRaspoloziviIot = popisRaspoloziviIot;
+    }
+
+    public List<String> getPopisOdabraniIot() {
+        return popisOdabraniIot;
+    }
+
+    public void setPopisOdabraniIot(List<String> popisOdabraniIot) {
+        this.popisOdabraniIot = popisOdabraniIot;
+    }
+
+    public String getAzurirajId() {
+        return azurirajId;
+    }
+
+    public void setAzurirajId(String azurirajId) {
+        this.azurirajId = azurirajId;
+    }
+
+    public String getAzurirajNaziv() {
+        return azurirajNaziv;
+    }
+
+    public void setAzurirajNaziv(String azurirajNaziv) {
+        this.azurirajNaziv = azurirajNaziv;
+    }
+
+    public String getAzurirajAdresa() {
+        return azurirajAdresa;
+    }
+
+    public void setAzurirajAdresa(String azurirajAdresa) {
+        this.azurirajAdresa = azurirajAdresa;
+    }
+
+    public List<MeteoPrognoza> getMeteoPrognoze() {
+        return meteoPrognoze;
+    }
+
+    public void setMeteoPrognoze(List<MeteoPrognoza> meteoPrognoze) {
+        this.meteoPrognoze = meteoPrognoze;
+    }
+
+    public boolean isAzuriranje() {
+        return azuriranje;
+    }
+
+    public void setAzuriranje(boolean azuriranje) {
+        this.azuriranje = azuriranje;
+    }
+
+    public boolean isPrognoze() {
+        return prognoze;
+    }
+
+    public void setPrognoze(boolean prognoze) {
+        this.prognoze = prognoze;
+    }
+
+    public String getNoviAdresa() {
+        return noviAdresa;
+    }
+
+    public void setNoviAdresa(String noviAdresa) {
+        this.noviAdresa = noviAdresa;
+    }
+
+    public String getGumbPregledPrognoza() {
+        //TODO mjenjanje ime gumbova
+        return gumbPregledPrognoza;
+    }
+
+    public void setGumbPregledPrognoza(String gumbPregledPrognoza) {
+        this.gumbPregledPrognoza = gumbPregledPrognoza;
+    }
+
+}

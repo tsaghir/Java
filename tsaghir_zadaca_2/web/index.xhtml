@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view locale="#{lokalizator.odabraniJezik}">
+        <h:head>
+            <title>#{m.index_naslov}</title>
+            <h:outputStylesheet library="css" name="bootstrap.css"/>
+        </h:head>
+        <h:body>
+            <h:form styleClass="form-horizontal">
+                <nav class="navbar navbar-inverse fixed-top">
+                    <a class="navbar-brand">#{m.index_naslov}</a>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav list-unstyled">
+                            <li class="nav-item">
+                                <h:commandLink class="nav-link col-sm-1" styleClass="btn" value="#{m.index_saljiPoruku}" action="#{lokalizator.saljiPoruku}" /><br/>
+                            </li>
+                            <li class="nav-item">
+                                <h:commandLink class="nav-link col-sm-2" styleClass="btn" value="#{m.index_pregledPoruka}" action="#{lokalizator.pregledPoruka}" />
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="form-group col-sm-12">
+                    <h:selectOneRadio class="col-sm-3 text-center" value="#{lokalizator.odabraniJezik}">
+                        <f:selectItems value="#{lokalizator.izbornikJezika}"
+                                       var="jezik"
+                                       itemLabel="#{jezik.labela}"
+                                       itemValue="#{jezik.vrijednost}"/>
+                    </h:selectOneRadio>
+                </div>
+                <div class="col-sm-6">
+                    <h:commandButton value="#{m.index_promjena}" class="btn col-sm-2" action="#{lokalizator.odaberiJezik}" />
+                </div>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>
+

@@ -1,0 +1,109 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.pomagaci;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author Generalko
+ */
+public class DataBaseHelper {
+
+    private static DataBaseHelper instance = null;
+    private static Connection connection;
+
+    private DataBaseHelper() {
+    }
+
+    public static DataBaseHelper getInstance() {
+        if (instance == null) {
+            instance = new DataBaseHelper();
+        }
+        return instance;
+    }
+
+    public static void dodajUredaj(int id, String naziv, float latitude, float longitude) throws SQLException {
+        if (!postojiIot(id)) {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO uredaji (id,naziv,latitude,longitude) VALUES (%d,'%s',%f,%f);", id, naziv, latitude, longitude);
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+        }
+
+    }
+
+    private static boolean postojiIot(int id) {
+        Statement stmt = null;
+        String query = "select*from uredaji where id=" + id;
+        try {
+            stmt = connect().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } finally {
+            disconnect();
+        }
+    }
+
+    public static void dodajTemperature(int id, float temp, String vrijeme_mjerenja, String vrijeme_kreiranja) throws SQLException {
+        if (postojiIot(id)) {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO temparature (id,temp,vrijeme_mjerenja,vrijeme_kreiranja) VALUES (%d,%f,'%s','%s');", id, temp, vrijeme_mjerenja, vrijeme_kreiranja);
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+        }
+    }
+
+    public static void dodajDogadaje(int id, int vrsta, String vrijeme_izvrsavanja, String vrijeme_kreiranja) throws SQLException {
+        if (postojiIot(id)) {
+            Statement stmt = null;
+            String query = String.format("INSERT INTO dogadaji (id,vrsta,vrijeme_izvrsavanja,vrijeme_kreiranja) VALUES (%d,%d,'%s','%s');", id, vrsta, vrijeme_izvrsavanja, vrijeme_kreiranja);
+            stmt = connect().createStatement();
+            stmt.executeUpdate(query);
+            disconnect();
+        }
+    }
+
+    private static Connection connect() {
+        try {
+            Class.forName(KonfiguracijaHelper.DRIVER_MYSQL);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection(KonfiguracijaHelper.SERVER_DATABASE + KonfiguracijaHelper.USER_DATABASE,
+                        KonfiguracijaHelper.USER_USERNAME, KonfiguracijaHelper.USER_PASSWORD);
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return connection;
+    }
+
+    // disconnect database
+    private static void disconnect() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+            } catch (SQLException ex) {
+                Logger.getLogger(DataBaseHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.ws.klijenti;
+
+
+/**
+ *
+ * @author grupa_2
+ */
+public class MeteoWSKlijent {
+
+    public static java.util.List<org.foi.nwtis.tsaghir.ws.klijenti.Uredjaj> dajSveUredjajeSoap() {
+        org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS_Service service = new org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS_Service();
+        org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS port = service.getGeoMeteoWSPort();
+        return port.dajSveUredjaje();
+    }
+    
+    public static Boolean dodajUredjaj(org.foi.nwtis.tsaghir.ws.klijenti.Uredjaj uredjaj) {
+        org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS_Service service = new org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS_Service();
+        org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS port = service.getGeoMeteoWSPort();
+        return port.dodajUredjaj(uredjaj);
+    }
+
+    public static java.util.List<org.foi.nwtis.tsaghir.ws.klijenti.MeteoPodaci> dajSveMeteoPodatkeZaUredjaj(int id, long from, long to) {
+        org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS_Service service = new org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS_Service();
+        org.foi.nwtis.tsaghir.ws.klijenti.GeoMeteoWS port = service.getGeoMeteoWSPort();
+        return port.dajSveMeteoPodatkeZaUredjaj(id, from, to);
+    }
+}

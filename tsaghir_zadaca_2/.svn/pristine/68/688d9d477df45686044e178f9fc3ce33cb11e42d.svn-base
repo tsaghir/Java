@@ -1,0 +1,84 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.foi.nwtis.tsaghir.web.dretve;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.servlet.ServletContext;
+import org.foi.nwtis.tsaghir.konfiguracije.Konfiguracija;
+
+/**
+ *
+ * @author grupa_2
+ */
+public class ObradaPoruka extends Thread {
+
+    private boolean prekid_obrade = false;
+    private ServletContext sc = null;
+    private Session session;
+
+    @Override
+    public void interrupt() {
+        prekid_obrade = true;
+        super.interrupt(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void run() {
+        Konfiguracija konf = (Konfiguracija) sc.getAttribute("Mail_Konfig");
+        String server = konf.dajPostavku("mail.server");
+        int port = Integer.parseInt(konf.dajPostavku("mail.port"));
+        String korisnik = konf.dajPostavku("mail.usernameThread");
+        String lozinka = konf.dajPostavku("mail.passwordThread");
+        int trajanjeCiklusa = Integer.parseInt(konf.dajPostavku("mail.port"));
+        //TODO za ostale parametre
+        int trajanjeObrade = 0;
+        //TODO odredi trajanje obrade
+        int redniBrojCiklusa = 0;
+
+        while (!prekid_obrade) {
+            // Start the session
+            java.util.Properties properties = System.getProperties();
+            properties.put("mail.smtp.host", server);
+            session = Session.getInstance(properties, null);
+
+            // Connect to the store
+            try {
+                Store store = session.getStore("imap");
+                store.connect(server, korisnik, lozinka);
+                // Open the INBOX folder
+                Folder folder = store.getFolder("INBOX");
+                folder.open(Folder.READ_ONLY);
+                
+                Message[] messages = folder.getMessages();
+                for (int i = 0; i < messages.length; i++) {
+                    //TODO dovrsiti citanje, obradu i prebacivanje u mape
+                }
+                redniBrojCiklusa++;
+                System.out.println("Obrada poruka u ciklusu: " + redniBrojCiklusa);
+                sleep(trajanjeCiklusa * 1000 - trajanjeObrade);
+            } catch (MessagingException | InterruptedException ex) {
+                Logger.getLogger(ObradaPoruka.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+    }
+
+    @Override
+    public synchronized void start() {
+        super.start(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void setSc(ServletContext sc) {
+        this.sc = sc;
+    }
+
+}
